@@ -3,24 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Εφημερεύοντα Φαρμακεία Ν.Πέλλας</title>
+    <title>Εφημερεύοντα Φαρμακεία Πέλλας</title>
     <link rel="stylesheet" href="style.css">
-    
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
     <header>
-        <h1><i class="fas fa-plus-square"></i> Εφημερεύοντα Φαρμακεία Ν.Πέλλας</h1>
+        <h1><i class="fas fa-clinic-medical"></i> Εφημερίες Πέλλας</h1>
         <p id="current-date"></p>
     </header>
 
     <div class="container">
         <div class="filters">
-            <label for="area-select">Επιλέξτε Περιοχή:</label>
             <select id="area-select">
                 <option value="all">Όλες οι περιοχές</option>
                 <option value="Έδεσσα">Έδεσσα</option>
@@ -31,13 +27,9 @@
             </select>
         </div>
 
-        <div id="map"></div>
-
-        <div id="pharmacy-list" class="pharmacy-list">
-            </div>
+        <div id="pharmacy-list" class="pharmacy-list"></div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
