@@ -1,98 +1,134 @@
 :root {
-    --primary-color: #008542; /* Φαρμακευτικό Πράσινο */
-    --secondary-color: #e8f5e9;
+    --primary-color: #008542;
+    --secondary-color: #005c2e;
+    --accent-color: #e8f5e9;
+    --text-dark: #333;
+    --text-light: #666;
     --bg-color: #f8f9fa;
-    --card-bg: #ffffff;
-    --text-color: #333;
 }
 
 body {
     font-family: 'Roboto', sans-serif;
     background-color: var(--bg-color);
-    color: var(--text-color);
     margin: 0;
     padding: 0;
 }
 
 header {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     text-align: center;
     padding: 1.5rem 1rem;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-header h1 { margin: 0; font-size: 1.4rem; }
-header p { margin: 8px 0 0; font-size: 0.95rem; opacity: 0.9; font-weight: 300; }
+header h1 { margin: 0; font-size: 1.6rem; }
+header p { margin: 5px 0 0; opacity: 0.9; font-size: 0.95rem; }
 
 .container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px 15px;
+    padding: 20px 10px;
 }
 
-/* Στυλ Φίλτρων */
-.filters {
-    margin-bottom: 20px;
-}
-.filters label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-}
-.filters select {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    background: white;
-    cursor: pointer;
-}
-
-/* Στυλ Χάρτη */
-#map {
-    height: 350px; /* Ύψος χάρτη */
-    width: 100%;
-    border-radius: 12px;
+/* Στυλ για τις Καρτέλες (Tabs) */
+.tabs-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
     margin-bottom: 25px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    border: 2px solid white;
-    z-index: 1;
 }
 
-/* Στυλ Καρτών */
-.pharmacy-card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border-left: 6px solid var(--primary-color);
-    transition: transform 0.2s;
-}
-
-.pharmacy-card:hover { transform: translateY(-3px); }
-
-.pharmacy-card h3 { 
-    margin: 0 0 8px; 
-    color: var(--text-color); 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center;
-}
-
-.pharmacy-card .area-badge {
-    background: var(--secondary-color);
-    color: var(--primary-color);
-    padding: 4px 10px;
+.tab-btn {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
     border-radius: 20px;
-    font-size: 0.75rem;
-    text-transform: uppercase;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
 }
 
-.details { margin: 8px 0; font-size: 0.95rem; color: #555; display: flex; align-items: center; }
-.details i { width: 25px; color: var(--primary-color); text-align: center; margin-right: 5px; }
+.tab-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0, 133, 66, 0.3);
+}
+
+/* Στυλ για τη Λίστα (Accordion) */
+.location-row {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 5px solid transparent;
+}
+
+/* Αν υπάρχει φαρμακείο, βάλε πράσινη γραμμή */
+.location-row.has-pharmacy {
+    border-left-color: var(--primary-color);
+}
+
+.location-header {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: white;
+}
+
+.location-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.village-name {
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--text-dark);
+}
+
+.pharmacy-preview {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    margin-top: 4px;
+}
+
+.location-header .icon {
+    color: #ccc;
+    transition: transform 0.3s;
+}
+
+.location-row.open .location-header .icon {
+    transform: rotate(180deg);
+}
+
+/* Λεπτομέρειες που ανοίγουν */
+.location-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    background-color: var(--accent-color);
+}
+
+.details-content {
+    padding: 15px;
+    border-top: 1px solid #eee;
+}
+
+.detail-item {
+    margin-bottom: 8px;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
 .actions {
     display: flex;
@@ -103,16 +139,12 @@ header p { margin: 8px 0 0; font-size: 0.95rem; opacity: 0.9; font-weight: 300; 
 .btn {
     flex: 1;
     text-align: center;
-    padding: 12px;
-    border-radius: 6px;
+    padding: 10px;
+    border-radius: 5px;
     text-decoration: none;
     font-weight: bold;
     font-size: 0.9rem;
-    transition: background 0.2s;
 }
 
 .btn-call { background-color: var(--primary-color); color: white; }
-.btn-call:hover { background-color: #006e36; }
-
-.btn-map { background-color: #eee; color: #333; }
-.btn-map:hover { background-color: #ddd; }
+.btn-map { background-color: white; color: var(--text-dark); border: 1px solid #ccc; }
