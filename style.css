@@ -1,10 +1,9 @@
 :root {
     --primary-color: #008542;
     --secondary-color: #005c2e;
-    --accent-color: #e8f5e9;
-    --text-dark: #333;
-    --text-light: #666;
-    --bg-color: #f8f9fa;
+    --accent-bg: #e8f5e9;
+    --bg-color: #f4f6f8;
+    --text-dark: #2c3e50;
 }
 
 body {
@@ -12,6 +11,7 @@ body {
     background-color: var(--bg-color);
     margin: 0;
     padding: 0;
+    color: var(--text-dark);
 }
 
 header {
@@ -19,36 +19,32 @@ header {
     color: white;
     text-align: center;
     padding: 1.5rem 1rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
-
-header h1 { margin: 0; font-size: 1.6rem; }
-header p { margin: 5px 0 0; opacity: 0.9; font-size: 0.95rem; }
 
 .container {
-    max-width: 800px;
+    max-width: 1000px; /* Μεγάλωσα λίγο το πλάτος */
     margin: 0 auto;
-    padding: 20px 10px;
+    padding: 20px 15px;
 }
 
-/* Στυλ για τις Καρτέλες (Tabs) */
+/* Tabs */
 .tabs-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     justify-content: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .tab-btn {
     background: white;
     border: 1px solid #ddd;
-    padding: 10px 15px;
-    border-radius: 20px;
+    padding: 10px 20px;
+    border-radius: 25px;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 500;
-    color: var(--text-dark);
     transition: all 0.3s ease;
 }
 
@@ -56,95 +52,120 @@ header p { margin: 5px 0 0; opacity: 0.9; font-size: 0.95rem; }
     background-color: var(--primary-color);
     color: white;
     border-color: var(--primary-color);
-    box-shadow: 0 4px 10px rgba(0, 133, 66, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 133, 66, 0.4);
+    transform: scale(1.05);
 }
 
-/* Στυλ για τη Λίστα (Accordion) */
+/* --- LAYOUT GRID (Η μεγάλη αλλαγή) --- */
+.main-layout {
+    display: grid;
+    gap: 20px;
+    /* Σε κινητά είναι 1 στήλη. Σε PC θα γίνει 2 στήλες (δείτε παρακάτω) */
+    grid-template-columns: 1fr; 
+}
+
+/* Τίτλοι ενοτήτων */
+.featured-section h2, .villages-section h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* --- ΚΑΡΤΑ ΚΕΝΤΡΙΚΟΥ ΦΑΡΜΑΚΕΙΟΥ (Featured) --- */
+.featured-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 133, 66, 0.15);
+    border-top: 6px solid var(--primary-color);
+    text-align: center;
+}
+
+.featured-card h3 {
+    font-size: 1.5rem;
+    margin: 10px 0;
+    color: var(--text-dark);
+}
+
+.featured-card .address {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.featured-card .big-phone {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin: 15px 0;
+    text-decoration: none;
+}
+
+.featured-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-large {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.btn-call-large { background: var(--primary-color); color: white; box-shadow: 0 4px 10px rgba(0,133,66,0.3); }
+.btn-map-large { background: white; color: var(--text-dark); border: 2px solid #eee; }
+
+/* --- ΛΙΣΤΑ ΧΩΡΙΩΝ (Accordion) --- */
 .location-row {
     background: white;
     border-radius: 8px;
-    margin-bottom: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    border-left: 5px solid transparent;
+    margin-bottom: 8px;
+    border: 1px solid #eee;
 }
 
-/* Αν υπάρχει φαρμακείο, βάλε πράσινη γραμμή */
-.location-row.has-pharmacy {
-    border-left-color: var(--primary-color);
-}
+.location-row.has-pharmacy { border-left: 4px solid var(--primary-color); }
 
 .location-header {
-    padding: 15px;
+    padding: 12px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    background: white;
 }
 
-.location-info {
-    display: flex;
-    flex-direction: column;
-}
+.village-name { font-weight: bold; font-size: 0.95rem; }
+.pharmacy-preview { font-size: 0.85rem; color: var(--primary-color); display: block; margin-top: 2px; }
 
-.village-name {
-    font-weight: bold;
-    font-size: 1rem;
-    color: var(--text-dark);
-}
-
-.pharmacy-preview {
-    font-size: 0.9rem;
-    color: var(--primary-color);
-    margin-top: 4px;
-}
-
-.location-header .icon {
-    color: #ccc;
-    transition: transform 0.3s;
-}
-
-.location-row.open .location-header .icon {
-    transform: rotate(180deg);
-}
-
-/* Λεπτομέρειες που ανοίγουν */
 .location-details {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-out;
-    background-color: var(--accent-color);
+    transition: max-height 0.3s ease;
+    background: var(--accent-bg);
 }
 
-.details-content {
-    padding: 15px;
-    border-top: 1px solid #eee;
-}
+.details-content { padding: 15px; }
 
-.detail-item {
-    margin-bottom: 8px;
-    color: var(--text-dark);
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* --- Responsive Design (PC vs Mobile) --- */
+@media (min-width: 768px) {
+    .main-layout {
+        /* Σε οθόνες μεγαλύτερες από 768px (Tablet/PC), κάντο 2 στήλες */
+        grid-template-columns: 45% 55%; 
+        align-items: start;
+    }
+    
+    .featured-section {
+        position: sticky; /* Για να μένει σταθερό όταν κάνεις scroll τη λίστα */
+        top: 20px;
+    }
 }
-
-.actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.btn {
-    flex: 1;
-    text-align: center;
-    padding: 10px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.btn-call { background-color: var(--primary-color); color: white; }
-.btn-map { background-color: white; color: var(--text-dark); border: 1px solid #ccc; }
