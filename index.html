@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Εφημερεύοντα Φαρμακεία Ν. Πέλλας</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -16,26 +16,11 @@
     </header>
 
     <div class="container">
-        <div class="filters">
-            <label for="area-select">Επιλέξτε Περιοχή:</label>
-            <select id="area-select">
-                <option value="all">Όλος ο Νομός</option>
-                <option value="Έδεσσα">Δήμος Έδεσσας</option>
-                <option value="Γιαννιτσά">Δήμος Πέλλας (Γιαννιτσά)</option>
-                <option value="Αριδαία">Δήμος Αλμωπίας (Αριδαία)</option>
-                <option value="Σκύδρα">Δήμος Σκύδρας</option>
-                <option value="Κρύα Βρύση">Κρύα Βρύση & Πέριξ</option>
-            </select>
-
-            <div id="sub-area-container" style="display:none; margin-top: 10px;">
-                <label for="sub-area-select">Επιλέξτε Τοποθεσία:</label>
-                <select id="sub-area-select">
-                    <option value="all">Όλες οι τοποθεσίες</option>
-                    </select>
+        <div class="tabs-container" id="tabs-container">
             </div>
-        </div>
 
-        <div id="pharmacy-list" class="pharmacy-list"></div>
+        <div id="pharmacy-grid" class="pharmacy-grid">
+            </div>
     </div>
 
     <script src="script.js"></script>
