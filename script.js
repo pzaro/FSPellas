@@ -6,7 +6,6 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT
 
 const SHOW_ALL_MODE = false;
 
-// Mapping Κέντρων (Πρέπει να ταιριάζει ακριβώς με το subArea στα δεδομένα)
 const cityCenters = {
     "Έδεσσα": "Έδεσσα (Κέντρο)",
     "Γιαννιτσά": "Γιαννιτσά (Πόλη)",
@@ -243,7 +242,8 @@ document.addEventListener('DOMContentLoaded', () => {
             rows.forEach(row => {
                 if (!row.trim()) return;
 
-                const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                // --- ΔΙΟΡΘΩΜΕΝΟ PARSING (Δέχεται κενά στα ονόματα) ---
+                const cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
                 if (!cols || cols.length < 3) return;
 
                 const date = cols[0].replace(/,/g, '').trim(); 
@@ -297,7 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
             fileLinkContainer.innerHTML = '';
             cityTitle.textContent = `Εφημερεύει: ${currentArea}`;
 
-            // Εύρεση εφημερίας με ευέλικτη αναζήτηση (χωρίς τόνους/κενά)
             const scheduleEntry = globalSchedule.find(s => 
                 s.date === todayStr && 
                 normalize(s.area) === normalize(currentArea)
@@ -316,13 +315,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </a>`;
             }
 
-            // Ενεργά Φαρμακεία (ΟΛΑ τα IDs που βρέθηκαν για σήμερα)
             let activePharmacies = SHOW_ALL_MODE 
                 ? pharmacies.filter(p => normalize(p.area) === normalize(currentArea))
                 : pharmacies.filter(p => todayIds.includes(p.id));
 
-            // Βρες όλα τα φαρμακεία της περιοχής για να γεμίσουμε τη λίστα χωριών
-            // (Χρησιμοποιούμε normalize και εδώ για να πιάνει την Κρύα Βρύση)
             const areaPharmacies = pharmacies.filter(p => normalize(p.area) === normalize(currentArea));
             const centerName = cityCenters[currentArea];
 
@@ -368,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const row = document.createElement('div');
                     row.className = `location-row ${hasPharmacy ? 'has-pharmacy' : ''}`;
 
-                    // Λίστα ονομάτων για την προεπισκόπηση (π.χ. "Παπαδόπουλος, Γεωργίου")
+                    // Λίστα ονομάτων για την προεπισκόπηση
                     const previewText = activePharmasInSub.map(p => p.name).join(', ');
 
                     let headerHTML = `
@@ -386,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (hasPharmacy) {
                         detailsHTML = '<div class="location-details"><div class="details-content">';
                         
-                        // Προσθήκη κάθε φαρμακείου στη λίστα (το ένα κάτω από το άλλο)
+                        // Προσθήκη κάθε φαρμακείου στη λίστα
                         activePharmasInSub.forEach((pharma, index) => {
                             const mapLink = pharma.map ? pharma.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pharma.name + " " + pharma.address + " " + pharma.area)}`;
                             
