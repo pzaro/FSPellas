@@ -6,6 +6,7 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT
 
 const SHOW_ALL_MODE = false;
 
+// Mapping Κέντρων (Πρέπει να ταιριάζει ακριβώς με το subArea στα δεδομένα)
 const cityCenters = {
     "Έδεσσα": "Έδεσσα (Κέντρο)",
     "Γιαννιτσά": "Γιαννιτσά (Πόλη)",
@@ -43,6 +44,7 @@ const pharmacies = [
     { id: 90, name: "ΜΠΑΧΤΣΕΒΑΝΙΔΟΥ ΜΕΡΟΠΗ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "25ης ΜΑΡΤΙΟΥ 12", phone: "2381023080" },
     { id: 95, name: "ΝΟΥΣΗΚΥΡΟΥ ΙΩΑΝΝΗΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "18Ης ΟΚΤΩΒΡΙΟΥ 5", phone: "2381022553" },
     { id: 107, name: "ΠΑΣΧΑΛΙΔΗΣ ΟΝΟΥΦΡΙΟΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "Π. ΜΕΛΑ 11", phone: "2381025007" },
+    { id: 108, name: "ΠΑΣΧΑΛΟΓΛΟΥ ΧΡΙΣΤΙΝΑ", area: "Γιαννιτσά", subArea: "Δροσερό", address: "ΔΡΟΣΕΡΟ", phone: "2381096196" },
     { id: 110, name: "ΠΕΤΡΙΔΗΣ ΔΗΜΗΤΡΙΟΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "Γ. ΠΕΤΣΟΥ 2-4", phone: "2381026158" },
     { id: 121, name: "ΣΙΓΑΛΑΣ ΜΑΡΙΝΟΣ", area: "Έδεσσα", subArea: "Πλατάνη", address: "ΠΛΑΤΑΝΗ", phone: "2381099114" },
     { id: 132, name: "ΣΤΟΥΓΙΑΝΝΙΔΟΥ ΝΕΚΤΑΡΙΑ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "ΜΟΝΑΣΤΗΡΙΟΥ 30", phone: "2381022444" },
@@ -126,7 +128,6 @@ const pharmacies = [
     { id: 102, name: "ΠΑΠΑΖΟΓΛΟΥ ΕΛΕΝΗ", area: "Γιαννιτσά", subArea: "Π. Μυλότοπος", address: "Π. ΜΥΛΟΤΟΠΟΣ", phone: "2382051200" },
     { id: 104, name: "ΠΑΠΑΝΤΩΝΗ ΧΑΡΙΚΛΕΙΑ", area: "Γιαννιτσά", subArea: "Π. Πέλλα", address: "Π. ΠΕΛΛΑ", phone: "2382031447" },
     { id: 105, name: "ΠΑΠΑΣΤΑΥΡΟΥ ΣΟΦΙΑ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "ΤΑΓ. ΓΕΩΡΓΟΥΛΗ 7", phone: "2382025444" },
-    { id: 108, name: "ΠΑΣΧΑΛΟΓΛΟΥ ΧΡΙΣΤΙΝΑ", area: "Γιαννιτσά", subArea: "Δροσερό", address: "ΔΡΟΣΕΡΟ", phone: "2381096196" },
     { id: 112, name: "ΠΛΟΥΓΑΡΛΗΣ ΔΗΜΗΤΡΙΟΣ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "ΕΘ. ΑΝΤΙΣΤΑΣΕΩΣ 4", phone: "2382028806" },
     { id: 113, name: "ΠΟΛΥΧΡΟΝΙΑΔΟΥ ΜΑΡΙΑ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "Δ. ΣΕΜΕΡΤΖΙΔΗ", phone: "2382022620" },
     { id: 117, name: "ΣΑΡΑΜΑΝΤΟΥ ΣΟΥΛΤΑΝΑ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "Χ. ΔΗΜΗΤΡΙΟΥ 1", phone: "2382024134" },
@@ -190,12 +191,12 @@ const pharmacies = [
 
 let globalSchedule = []; 
 
-// --- ΣΥΝΑΡΤΗΣΗ ΚΑΘΑΡΙΣΜΟΥ ΚΕΙΜΕΝΟΥ (Για να μην έχεις πρόβλημα με τόνους/κεφαλαία) ---
+// --- ΣΥΝΑΡΤΗΣΗ ΚΑΘΑΡΙΣΜΟΥ ΚΕΙΜΕΝΟΥ (Για να μην έχεις πρόβλημα με τόνους/κεφαλαία/κενά) ---
 function normalize(str) {
     if (!str) return "";
     return str
         .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Αφαιρεί τόνους (ά -> α)
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Αφαιρεί τόνους
         .replace(/\s+/g, "") // Αφαιρεί όλα τα κενά
         .trim();
 }
@@ -209,6 +210,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingMsg = document.getElementById('loading-msg');
     const mainLayout = document.getElementById('main-layout');
     
+    // Αφαίρεση του Debug Box
+    // ...
+
     let fileLinkContainer = document.getElementById('file-link-container');
     if (!fileLinkContainer) {
         fileLinkContainer = document.createElement('div');
@@ -293,6 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fileLinkContainer.innerHTML = '';
             cityTitle.textContent = `Εφημερεύει: ${currentArea}`;
 
+            // Εύρεση εφημερίας με ευέλικτη αναζήτηση (χωρίς τόνους/κενά)
             const scheduleEntry = globalSchedule.find(s => 
                 s.date === todayStr && 
                 normalize(s.area) === normalize(currentArea)
@@ -311,11 +316,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     </a>`;
             }
 
+            // Ενεργά Φαρμακεία (ΟΛΑ τα IDs που βρέθηκαν για σήμερα)
             let activePharmacies = SHOW_ALL_MODE 
-                ? pharmacies.filter(p => p.area === currentArea)
+                ? pharmacies.filter(p => normalize(p.area) === normalize(currentArea))
                 : pharmacies.filter(p => todayIds.includes(p.id));
 
-            const areaPharmacies = pharmacies.filter(p => p.area === currentArea);
+            // Βρες όλα τα φαρμακεία της περιοχής για να γεμίσουμε τη λίστα χωριών
+            // (Χρησιμοποιούμε normalize και εδώ για να πιάνει την Κρύα Βρύση)
+            const areaPharmacies = pharmacies.filter(p => normalize(p.area) === normalize(currentArea));
             const centerName = cityCenters[currentArea];
 
             // 1. ΚΕΝΤΡΟ
@@ -345,13 +353,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>`;
             }
 
-            // 2. ΧΩΡΙΑ (ΜΕ ΠΟΛΛΑΠΛΑ ΦΑΡΜΑΚΕΙΑ)
+            // 2. ΧΩΡΙΑ (ΜΕ ΠΟΛΛΑΠΛΑ ΦΑΡΜΑΚΕΙΑ & ΟΜΑΔΟΠΟΙΗΣΗ)
             const uniqueSubAreas = [...new Set(areaPharmacies.map(p => p.subArea))]
                 .filter(sub => sub !== centerName).sort();
 
             if (uniqueSubAreas.length > 0) {
                 uniqueSubAreas.forEach(sub => {
-                    // Βρες ΟΛΑ τα ενεργά φαρμακεία στο χωριό και ταξινόμησέ τα
+                    // Βρες ΟΛΑ τα ενεργά φαρμακεία στο χωριό και ταξινόμησέ τα αλφαβητικά
                     const activePharmasInSub = activePharmacies
                         .filter(p => p.subArea === sub)
                         .sort((a, b) => a.name.localeCompare(b.name));
@@ -360,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const row = document.createElement('div');
                     row.className = `location-row ${hasPharmacy ? 'has-pharmacy' : ''}`;
 
-                    // Λίστα ονομάτων για την προεπισκόπηση
+                    // Λίστα ονομάτων για την προεπισκόπηση (π.χ. "Παπαδόπουλος, Γεωργίου")
                     const previewText = activePharmasInSub.map(p => p.name).join(', ');
 
                     let headerHTML = `
@@ -378,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (hasPharmacy) {
                         detailsHTML = '<div class="location-details"><div class="details-content">';
                         
-                        // Προσθήκη κάθε φαρμακείου στη λίστα
+                        // Προσθήκη κάθε φαρμακείου στη λίστα (το ένα κάτω από το άλλο)
                         activePharmasInSub.forEach((pharma, index) => {
                             const mapLink = pharma.map ? pharma.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pharma.name + " " + pharma.address + " " + pharma.area)}`;
                             
