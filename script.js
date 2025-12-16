@@ -2,12 +2,12 @@
 // 1. ΡΥΘΜΙΣΕΙΣ & ONLINE ΔΕΔΟΜΕΝΑ
 // ==========================================
 
-// Το δικό σου Link από το Google Sheet (Σωστό!)
+// Το Link σου (Σωστό)
 const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTyh1AJApeD-UUcEwJvsEj7IgozJzjGzUXv8OY3wOPGD71_HbhsfuHUJcPb3uFC9-rnpCLE2j2YE7DK/pub?output=csv';
 
-const SHOW_ALL_MODE = false; // false = Διαβάζει από το ίντερνετ
+const SHOW_ALL_MODE = false;
 
-// Mapping Κέντρων (Ποιο subArea είναι η πρωτεύουσα κάθε Δήμου)
+// Mapping Κέντρων
 const cityCenters = {
     "Έδεσσα": "Έδεσσα (Κέντρο)",
     "Γιαννιτσά": "Γιαννιτσά (Πόλη)",
@@ -45,6 +45,7 @@ const pharmacies = [
     { id: 90, name: "ΜΠΑΧΤΣΕΒΑΝΙΔΟΥ ΜΕΡΟΠΗ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "25ης ΜΑΡΤΙΟΥ 12", phone: "2381023080" },
     { id: 95, name: "ΝΟΥΣΗΚΥΡΟΥ ΙΩΑΝΝΗΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "18Ης ΟΚΤΩΒΡΙΟΥ 5", phone: "2381022553" },
     { id: 107, name: "ΠΑΣΧΑΛΙΔΗΣ ΟΝΟΥΦΡΙΟΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "Π. ΜΕΛΑ 11", phone: "2381025007" },
+    { id: 108, name: "ΠΑΣΧΑΛΟΓΛΟΥ ΧΡΙΣΤΙΝΑ", area: "Έδεσσα", subArea: "Δροσερό", address: "ΔΡΟΣΕΡΟ", phone: "2381096196" },
     { id: 110, name: "ΠΕΤΡΙΔΗΣ ΔΗΜΗΤΡΙΟΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "Γ. ΠΕΤΣΟΥ 2-4", phone: "2381026158" },
     { id: 121, name: "ΣΙΓΑΛΑΣ ΜΑΡΙΝΟΣ", area: "Έδεσσα", subArea: "Πλατάνη", address: "ΠΛΑΤΑΝΗ", phone: "2381099114" },
     { id: 132, name: "ΣΤΟΥΓΙΑΝΝΙΔΟΥ ΝΕΚΤΑΡΙΑ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "ΜΟΝΑΣΤΗΡΙΟΥ 30", phone: "2381022444" },
@@ -155,7 +156,7 @@ const pharmacies = [
     { id: 33, name: "ΔΗΜΗΤΡΙΑΔΟΥ ΑΛΕΞΑΝΔΡΑ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΣΑΦΡΑΠΟΛΕΩΣ 17", phone: "2381089199" },
     { id: 36, name: "ΔΟΥΛΚΕΡΙΔΗΣ ΧΑΡΑΛΑΜΠΟΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΕΘΝ. ΑΝΤΙΣΤΑΣΕΩΣ 24", phone: "2381088845" },
     { id: 38, name: "ΕΜΜΑΝΟΥΗΛΙΔΗΣ ΓΕΩΡΓΙΟΣ", area: "Σκύδρα", subArea: "Καλύβια", address: "ΚΑΛΥΒΙΑ", phone: "2381061195" },
-    { id: 40, name: "ΖΑΡΟΓΟΥΛΙΔΗΣ ΠΑΝΑΓΙΩΤΗΣ", area: "Σκύδρα", subArea: "Μάνδαλο", address: "ΜΑΝΔΑΛΟ", phone: "2381097677" },
+    { id: 40, name: "ΧΕΛΗ ΑΝΑΣΤΑΣΙΑ (ΝΑΤΑΛΙΑ)", area: "Σκύδρα", subArea: "Μάνδαλο", address: "ΜΑΝΔΑΛΟ", phone: "2381097677" },
     { id: 48, name: "ΚΑΛΑΦΑΤΗΣ ΣΤΑΥΡΟΣ", area: "Σκύδρα", subArea: "Πρ. Ηλίας", address: "ΠΡ. ΗΛΙΑΣ", phone: "2381041959" },
     { id: 77, name: "ΜΑΝΘΟΥ ΧΡΗΣΤΟΣ", area: "Σκύδρα", subArea: "Λιποχώρι", address: "ΛΙΠΟΧΩΡΙ", phone: "2381400770" },
     { id: 83, name: "ΜΗΝΤΙΛΑΚΗ ΔΕΣΠΟΙΝΑ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΕΘΝ. ΑΝΤΙΣΤΑΣΗΣ 8", phone: "2381088875" },
@@ -178,7 +179,7 @@ const pharmacies = [
     // --- ΚΡΥΑ ΒΡΥΣΗ ---
     { id: 4, name: "ΑΔΑΜΙΔΗΣ ΘΕΟΔΟΣΙΟΣ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Β. ΠΑΥΛΟΥ 77", phone: "2382062100" },
     { id: 5, name: "ΑΔΑΜΙΔΟΥ ΜΑΡΘΑ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Β. ΠΑΥΛΟΥ 77", phone: "2382062100" },
-    { id: 39, name: "ΕΜΜΑΝΟΥΗΛΙΔΗΣ ΚΩΝΣΤΑΝΤΙΝΟΣ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Κρύα Βρύση", phone: "2382061028" },
+    { id: 39, name: "ΕΜΜΑΝΟΥΗΛΙΔΗΣ ΚΩΝΣΤΑΝΤΙΝΟΣ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "ΚΡΥΑ ΒΡΥΣΗ", phone: "2382061028" },
     { id: 53, name: "ΚΑΡΑΟΥΛΑΝΗ ΕΥΑΓΓΕΛΙΑ", area: "Κρύα Βρύση", subArea: "Γαλατάδες", address: "ΓΑΛΑΤΑΔΕΣ", phone: "2382042299" },
     { id: 59, name: "ΚΙΤΚΑ ΑΝΑΣΤΑΣΙΑ", area: "Κρύα Βρύση", subArea: "Ακρολίμνη", address: "ΑΚΡΟΛΙΜΝΗ", phone: "2382063656" },
     { id: 70, name: "ΛΑΠΠΑ ΑΓΓΕΛΑ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Μ. ΑΛΕΞΑΝΔΡΟΥ 8", phone: "2382061786" },
@@ -192,6 +193,16 @@ const pharmacies = [
 
 let globalSchedule = []; 
 
+// --- ΣΥΝΑΡΤΗΣΗ ΚΑΘΑΡΙΣΜΟΥ ΚΕΙΜΕΝΟΥ (Για να μην έχεις πρόβλημα με τόνους/κεφαλαία) ---
+function normalize(str) {
+    if (!str) return "";
+    return str
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Αφαιρεί τόνους (ά -> α)
+        .replace(/\s+/g, "") // Αφαιρεί όλα τα κενά
+        .trim();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const tabsContainer = document.getElementById('tabs-container');
     const cityContainer = document.getElementById('city-pharmacy-container');
@@ -201,7 +212,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingMsg = document.getElementById('loading-msg');
     const mainLayout = document.getElementById('main-layout');
     
-    // Δημιουργία χώρου για το κουμπί αρχείου
+    // Δημιουργία Debug Box
+    let debugBox = document.createElement('div');
+    debugBox.style.cssText = "margin-top:30px; padding:15px; background:#f0f0f0; border:1px solid #ccc; font-family:monospace; font-size:0.8rem; color:#333;";
+    debugBox.innerHTML = "<strong>Δεδομένα από Google Sheet (Debug):</strong><br>";
+    document.querySelector('.container').appendChild(debugBox);
+
     let fileLinkContainer = document.getElementById('file-link-container');
     if (!fileLinkContainer) {
         fileLinkContainer = document.createElement('div');
@@ -226,29 +242,31 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error("Δεν ήταν δυνατή η σύνδεση με το Google Sheet.");
             
             const data = await response.text();
-            
-            // Απλή ανάλυση CSV
             const rows = data.split('\n').slice(1); 
             
+            let debugText = "";
+
             rows.forEach(row => {
                 if (!row.trim()) return;
 
-                // Έξυπνος διαχωρισμός CSV 
                 const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
                 if (!cols || cols.length < 3) return;
 
-                // Καθαρισμός δεδομένων
                 const date = cols[0].replace(/,/g, '').trim(); 
                 const area = cols[1].replace(/,/g, '').trim();
-                
-                // Καθαρισμός IDs (αφαιρούμε εισαγωγικά και κρατάμε αριθμούς)
                 let idsRaw = cols[2].replace(/"/g, ''); 
                 const ids = idsRaw.split(/[-,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
-                
                 const link = cols[3] ? cols[3].replace(/,/g, '').trim() : null;
 
                 globalSchedule.push({ date, area, ids, link });
+                
+                // Προσθήκη στο Debug Box για να βλέπεις τι διαβάζει
+                if (date === todayStr) {
+                    debugText += `✅ Βρέθηκε για σήμερα (${area}): IDs: ${ids.join(', ')}<br>`;
+                }
             });
+
+            debugBox.innerHTML += debugText || "⚠️ Δεν βρέθηκαν εγγραφές για τη σημερινή ημερομηνία (" + todayStr + ").<br>Ελέγξτε την ημερομηνία στο Excel (πρέπει να είναι YYYY-MM-DD).";
 
             if (loadingMsg) loadingMsg.style.display = 'none';
             if (mainLayout) mainLayout.style.display = 'grid';
@@ -292,13 +310,15 @@ document.addEventListener('DOMContentLoaded', () => {
             fileLinkContainer.innerHTML = '';
             cityTitle.textContent = `Εφημερεύει: ${currentArea}`;
 
-            // Βρες τα δεδομένα για ΣΗΜΕΡΑ και για την ΠΕΡΙΟΧΗ
-            const scheduleEntry = globalSchedule.find(s => s.date === todayStr && s.area === currentArea);
+            // --- ΑΝΑΖΗΤΗΣΗ ΜΕ NORMALIZE (Αγνοεί τόνους/κενά) ---
+            const scheduleEntry = globalSchedule.find(s => 
+                s.date === todayStr && 
+                normalize(s.area) === normalize(currentArea)
+            );
             
             const todayIds = scheduleEntry ? scheduleEntry.ids : [];
             const fileLink = scheduleEntry ? scheduleEntry.link : null;
 
-            // Κουμπί Αρχείου
             if (fileLink && fileLink.length > 5) {
                 fileLinkContainer.innerHTML = `
                     <a href="${fileLink}" target="_blank" style="
@@ -309,11 +329,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </a>`;
             }
 
-            // Ενεργά Φαρμακεία
             let activePharmacies = SHOW_ALL_MODE 
                 ? pharmacies.filter(p => p.area === currentArea)
                 : pharmacies.filter(p => todayIds.includes(p.id));
 
+            // Βρες όλα τα φαρμακεία της περιοχής για να γεμίσουμε τη λίστα χωριών
             const areaPharmacies = pharmacies.filter(p => p.area === currentArea);
             const centerName = cityCenters[currentArea];
 
@@ -322,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (activeCenterPharmacies.length > 0) {
                 activeCenterPharmacies.forEach(p => {
-                    const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + " " + p.address + " " + p.area)}`;
+                    const mapLink = p.map ? p.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + " " + p.address + " " + p.area)}`;
                     const card = document.createElement('div');
                     card.className = 'featured-card';
                     card.innerHTML = `
@@ -367,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     let detailsHTML = '';
                     if (activePharmaInSub) {
-                        const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activePharmaInSub.name + " " + activePharmaInSub.address + " " + activePharmaInSub.area)}`;
+                        const mapLink = activePharmaInSub.map ? activePharmaInSub.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activePharmaInSub.name + " " + activePharmaInSub.address + " " + activePharmaInSub.area)}`;
                         detailsHTML = `
                             <div class="location-details">
                                 <div class="details-content">
