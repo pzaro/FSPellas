@@ -209,9 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingMsg = document.getElementById('loading-msg');
     const mainLayout = document.getElementById('main-layout');
     
-    // Αφαίρεση του Debug Box
-    // ...
-
     let fileLinkContainer = document.getElementById('file-link-container');
     if (!fileLinkContainer) {
         fileLinkContainer = document.createElement('div');
@@ -251,8 +248,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 let idsRaw = cols[2].replace(/"/g, ''); 
                 const ids = idsRaw.split(/[-,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
                 const link = cols[3] ? cols[3].replace(/,/g, '').trim() : null;
+                const adImage = cols[4] ? cols[4].replace(/,/g, '').trim() : null;
+                const adLink = cols[5] ? cols[5].replace(/,/g, '').trim() : null;
+                const adText = cols[6] ? cols[6].replace(/,/g, '').trim() : null;
 
-                globalSchedule.push({ date, area, ids, link });
+                globalSchedule.push({ date, area, ids, link, adImage, adLink, adText });
             });
 
             if (loadingMsg) loadingMsg.style.display = 'none';
@@ -304,6 +304,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const todayIds = scheduleEntry ? scheduleEntry.ids : [];
             const fileLink = scheduleEntry ? scheduleEntry.link : null;
+            const adImage = scheduleEntry ? scheduleEntry.adImage : null;
+            const adLink = scheduleEntry ? scheduleEntry.adLink : null;
+            const adText = scheduleEntry ? scheduleEntry.adText : "";
 
             if (fileLink && fileLink.length > 5) {
                 fileLinkContainer.innerHTML = `
@@ -349,13 +352,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>`;
             }
 
-            // 2. ΧΩΡΙΑ (ΜΕ ΠΟΛΛΑΠΛΑ ΦΑΡΜΑΚΕΙΑ & ΟΜΑΔΟΠΟΙΗΣΗ)
+            // --- ΔΙΑΦΗΜΙΣΗ ---
+            if (adImage && adImage.length > 5) {
+                const adDiv = document.createElement('div');
+                adDiv.style.cssText = "margin-top:20px; border-radius:10px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1); border:1px solid #eee;";
+                
+                let adContent = `<img src="${adImage}" style="width:100%; display:block;" alt="Advertisement">`;
+                
+                if (adText) {
+                    adContent += `<div style="background:#fff; padding:10px; text-align:center; color:#333; font-weight:bold;">${adText}</div>`;
+                }
+
+                if (adLink && adLink.length > 5) {
+                    adDiv.innerHTML = `<a href="${adLink}" target="_blank" style="text-decoration:none;">${adContent}</a>`;
+                } else {
+                    adDiv.innerHTML = adContent;
+                }
+                
+                cityContainer.appendChild(adDiv);
+            }
+
+            // 2. ΧΩΡΙΑ
             const uniqueSubAreas = [...new Set(areaPharmacies.map(p => p.subArea))]
                 .filter(sub => sub !== centerName).sort();
 
             if (uniqueSubAreas.length > 0) {
                 uniqueSubAreas.forEach(sub => {
-                    // Βρες ΟΛΑ τα ενεργά φαρμακεία στο χωριό και ταξινόμησέ τα αλφαβητικά
                     const activePharmasInSub = activePharmacies
                         .filter(p => p.subArea === sub)
                         .sort((a, b) => a.name.localeCompare(b.name));
@@ -364,7 +386,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const row = document.createElement('div');
                     row.className = `location-row ${hasPharmacy ? 'has-pharmacy' : ''}`;
 
-                    // Λίστα ονομάτων για την προεπισκόπηση
                     const previewText = activePharmasInSub.map(p => p.name).join(', ');
 
                     let headerHTML = `
@@ -382,11 +403,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (hasPharmacy) {
                         detailsHTML = '<div class="location-details"><div class="details-content">';
                         
-                        // Προσθήκη κάθε φαρμακείου στη λίστα
                         activePharmasInSub.forEach((pharma, index) => {
                             const mapLink = pharma.map ? pharma.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pharma.name + " " + pharma.address + " " + pharma.area)}`;
                             
-                            // Προσθήκη διαχωριστικής γραμμής αν δεν είναι το πρώτο
                             if (index > 0) detailsHTML += '<hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">';
 
                             detailsHTML += `
