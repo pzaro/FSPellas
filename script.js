@@ -240,20 +240,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!row.trim()) return;
 
                 // --- ΔΙΟΡΘΩΜΕΝΟ PARSING (Δέχεται κενά στα ονόματα) ---
+                // Χρησιμοποιούμε Regex που πιάνει "κείμενο σε εισαγωγικά" ή απλό κείμενο
+                // και ΔΕΝ σπάει στα κενά, μόνο στα κόμματα.
                 const cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
                 if (!cols || cols.length < 3) return;
 
-                const date = cols[0].replace(/,/g, '').trim(); 
-                const area = cols[1].replace(/,/g, '').trim();
-                let idsRaw = cols[2].replace(/"/g, ''); 
+                // Καθαρισμός δεδομένων (αφαίρεση εξτρά κομμάτων/κεvών)
+                const date = cols[0].replace(/^"|"$/g, '').trim(); 
+                const area = cols[1].replace(/^"|"$/g, '').trim();
+                
+                // IDs: Αφαιρούμε εισαγωγικά και κρατάμε αριθμούς
+                let idsRaw = cols[2].replace(/^"|"$/g, ''); 
                 const ids = idsRaw.split(/[-,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
-                const link = cols[3] ? cols[3].replace(/,/g, '').trim() : null;
-                const adImage = cols[4] ? cols[4].replace(/,/g, '').trim() : null;
-                const adLink = cols[5] ? cols[5].replace(/,/g, '').trim() : null;
-                const adText = cols[6] ? cols[6].replace(/,/g, '').trim() : null;
+                
+                // Τα υπόλοιπα (προαιρετικά)
+                const link = (cols[3]) ? cols[3].replace(/^"|"$/g, '').trim() : null;
+                const adImage = (cols[4]) ? cols[4].replace(/^"|"$/g, '').trim() : null;
+                const adLink = (cols[5]) ? cols[5].replace(/^"|"$/g, '').trim() : null;
+                const adText = (cols[6]) ? cols[6].replace(/^"|"$/g, '').trim() : null;
 
                 globalSchedule.push({ date, area, ids, link, adImage, adLink, adText });
             });
+
+            // Ενημέρωση Ticker με την ΠΡΩΤΗ διαφήμιση που θα βρει για σήμερα
+            const todayAd = globalSchedule.find(s => s.date === todayStr && s.adText);
+            const tickerText = document.getElementById('ticker-text');
+            const tickerContainer = document.getElementById('ticker-container');
+            
+            if (todayAd && todayAd.adText && tickerText) {
+                tickerText.textContent = todayAd.adText;
+                tickerContainer.style.display = 'block'; // Εμφάνιση μπάρας
+            } else {
+                tickerContainer.style.display = 'none'; // Απόκρυψη αν δεν υπάρχει μήνυμα
+            }
 
             if (loadingMsg) loadingMsg.style.display = 'none';
             if (mainLayout) mainLayout.style.display = 'grid';
@@ -352,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>`;
             }
 
-            // --- ΔΙΑΦΗΜΙΣΗ ---
+            // --- ΔΙΑΦΗΜΙΣΗ (Banner Κάτω από τα Κεντρικά) ---
             if (adImage && adImage.length > 5) {
                 const adDiv = document.createElement('div');
                 adDiv.style.cssText = "margin-top:20px; border-radius:10px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1); border:1px solid #eee;";
@@ -372,12 +391,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 cityContainer.appendChild(adDiv);
             }
 
-            // 2. ΧΩΡΙΑ
+            // 2. ΧΩΡΙΑ (ΜΕ ΠΟΛΛΑΠΛΑ ΦΑΡΜΑΚΕΙΑ & ΟΜΑΔΟΠΟΙΗΣΗ)
             const uniqueSubAreas = [...new Set(areaPharmacies.map(p => p.subArea))]
                 .filter(sub => sub !== centerName).sort();
 
             if (uniqueSubAreas.length > 0) {
                 uniqueSubAreas.forEach(sub => {
+                    // Βρες ΟΛΑ τα ενεργά φαρμακεία στο χωριό και ταξινόμησέ τα αλφαβητικά
                     const activePharmasInSub = activePharmacies
                         .filter(p => p.subArea === sub)
                         .sort((a, b) => a.name.localeCompare(b.name));
@@ -386,6 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const row = document.createElement('div');
                     row.className = `location-row ${hasPharmacy ? 'has-pharmacy' : ''}`;
 
+                    // Λίστα ονομάτων για την προεπισκόπηση (π.χ. "Παπαδόπουλος, Γεωργίου")
                     const previewText = activePharmasInSub.map(p => p.name).join(', ');
 
                     let headerHTML = `
@@ -403,9 +424,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (hasPharmacy) {
                         detailsHTML = '<div class="location-details"><div class="details-content">';
                         
+                        // Προσθήκη κάθε φαρμακείου στη λίστα (το ένα κάτω από το άλλο)
                         activePharmasInSub.forEach((pharma, index) => {
                             const mapLink = pharma.map ? pharma.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pharma.name + " " + pharma.address + " " + pharma.area)}`;
                             
+                            // Προσθήκη διαχωριστικής γραμμής αν δεν είναι το πρώτο
                             if (index > 0) detailsHTML += '<hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">';
 
                             detailsHTML += `
