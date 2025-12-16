@@ -156,7 +156,7 @@ const pharmacies = [
     { id: 33, name: "ΔΗΜΗΤΡΙΑΔΟΥ ΑΛΕΞΑΝΔΡΑ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΣΑΦΡΑΠΟΛΕΩΣ 17", phone: "2381089199" },
     { id: 36, name: "ΔΟΥΛΚΕΡΙΔΗΣ ΧΑΡΑΛΑΜΠΟΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΕΘΝ. ΑΝΤΙΣΤΑΣΕΩΣ 24", phone: "2381088845" },
     { id: 38, name: "ΕΜΜΑΝΟΥΗΛΙΔΗΣ ΓΕΩΡΓΙΟΣ", area: "Σκύδρα", subArea: "Καλύβια", address: "ΚΑΛΥΒΙΑ", phone: "2381061195" },
-    { id: 40, name: "ΧΕΛΗ ΑΝΑΣΤΑΣΙΑ (ΝΑΤΑΛΙΑ)", area: "Σκύδρα", subArea: "Μάνδαλο", address: "ΜΑΝΔΑΛΟ", phone: "2381097677" },
+    { id: 40, name: "ΖΑΡΟΓΟΥΛΙΔΗΣ ΠΑΝΑΓΙΩΤΗΣ", area: "Σκύδρα", subArea: "Μάνδαλο", address: "ΜΑΝΔΑΛΟ", phone: "2381097677" },
     { id: 48, name: "ΚΑΛΑΦΑΤΗΣ ΣΤΑΥΡΟΣ", area: "Σκύδρα", subArea: "Πρ. Ηλίας", address: "ΠΡ. ΗΛΙΑΣ", phone: "2381041959" },
     { id: 77, name: "ΜΑΝΘΟΥ ΧΡΗΣΤΟΣ", area: "Σκύδρα", subArea: "Λιποχώρι", address: "ΛΙΠΟΧΩΡΙ", phone: "2381400770" },
     { id: 83, name: "ΜΗΝΤΙΛΑΚΗ ΔΕΣΠΟΙΝΑ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΕΘΝ. ΑΝΤΙΣΤΑΣΗΣ 8", phone: "2381088875" },
@@ -212,12 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingMsg = document.getElementById('loading-msg');
     const mainLayout = document.getElementById('main-layout');
     
-    // Δημιουργία Debug Box
-    let debugBox = document.createElement('div');
-    debugBox.style.cssText = "margin-top:30px; padding:15px; background:#f0f0f0; border:1px solid #ccc; font-family:monospace; font-size:0.8rem; color:#333;";
-    debugBox.innerHTML = "<strong>Δεδομένα από Google Sheet (Debug):</strong><br>";
-    document.querySelector('.container').appendChild(debugBox);
-
     let fileLinkContainer = document.getElementById('file-link-container');
     if (!fileLinkContainer) {
         fileLinkContainer = document.createElement('div');
@@ -242,10 +236,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error("Δεν ήταν δυνατή η σύνδεση με το Google Sheet.");
             
             const data = await response.text();
+            
             const rows = data.split('\n').slice(1); 
             
-            let debugText = "";
-
             rows.forEach(row => {
                 if (!row.trim()) return;
 
@@ -259,14 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const link = cols[3] ? cols[3].replace(/,/g, '').trim() : null;
 
                 globalSchedule.push({ date, area, ids, link });
-                
-                // Προσθήκη στο Debug Box για να βλέπεις τι διαβάζει
-                if (date === todayStr) {
-                    debugText += `✅ Βρέθηκε για σήμερα (${area}): IDs: ${ids.join(', ')}<br>`;
-                }
             });
-
-            debugBox.innerHTML += debugText || "⚠️ Δεν βρέθηκαν εγγραφές για τη σημερινή ημερομηνία (" + todayStr + ").<br>Ελέγξτε την ημερομηνία στο Excel (πρέπει να είναι YYYY-MM-DD).";
 
             if (loadingMsg) loadingMsg.style.display = 'none';
             if (mainLayout) mainLayout.style.display = 'grid';
