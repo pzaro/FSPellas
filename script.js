@@ -2,12 +2,10 @@
 // 1. ΡΥΘΜΙΣΕΙΣ & ONLINE ΔΕΔΟΜΕΝΑ
 // ==========================================
 
-// Το Link σου (Σωστό)
 const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTyh1AJApeD-UUcEwJvsEj7IgozJzjGzUXv8OY3wOPGD71_HbhsfuHUJcPb3uFC9-rnpCLE2j2YE7DK/pub?output=csv';
 
 const SHOW_ALL_MODE = false;
 
-// Mapping Κέντρων
 const cityCenters = {
     "Έδεσσα": "Έδεσσα (Κέντρο)",
     "Γιαννιτσά": "Γιαννιτσά (Πόλη)",
@@ -45,7 +43,6 @@ const pharmacies = [
     { id: 90, name: "ΜΠΑΧΤΣΕΒΑΝΙΔΟΥ ΜΕΡΟΠΗ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "25ης ΜΑΡΤΙΟΥ 12", phone: "2381023080" },
     { id: 95, name: "ΝΟΥΣΗΚΥΡΟΥ ΙΩΑΝΝΗΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "18Ης ΟΚΤΩΒΡΙΟΥ 5", phone: "2381022553" },
     { id: 107, name: "ΠΑΣΧΑΛΙΔΗΣ ΟΝΟΥΦΡΙΟΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "Π. ΜΕΛΑ 11", phone: "2381025007" },
-    { id: 108, name: "ΠΑΣΧΑΛΟΓΛΟΥ ΧΡΙΣΤΙΝΑ", area: "Γιαννιτσά", subArea: "Δροσερό", address: "ΔΡΟΣΕΡΟ", phone: "2381096196" },
     { id: 110, name: "ΠΕΤΡΙΔΗΣ ΔΗΜΗΤΡΙΟΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "Γ. ΠΕΤΣΟΥ 2-4", phone: "2381026158" },
     { id: 121, name: "ΣΙΓΑΛΑΣ ΜΑΡΙΝΟΣ", area: "Έδεσσα", subArea: "Πλατάνη", address: "ΠΛΑΤΑΝΗ", phone: "2381099114" },
     { id: 132, name: "ΣΤΟΥΓΙΑΝΝΙΔΟΥ ΝΕΚΤΑΡΙΑ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "ΜΟΝΑΣΤΗΡΙΟΥ 30", phone: "2381022444" },
@@ -296,7 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
             fileLinkContainer.innerHTML = '';
             cityTitle.textContent = `Εφημερεύει: ${currentArea}`;
 
-            // --- ΑΝΑΖΗΤΗΣΗ ΜΕ NORMALIZE (Αγνοεί τόνους/κενά) ---
             const scheduleEntry = globalSchedule.find(s => 
                 s.date === todayStr && 
                 normalize(s.area) === normalize(currentArea)
@@ -319,7 +315,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? pharmacies.filter(p => p.area === currentArea)
                 : pharmacies.filter(p => todayIds.includes(p.id));
 
-            // Βρες όλα τα φαρμακεία της περιοχής για να γεμίσουμε τη λίστα χωριών
             const areaPharmacies = pharmacies.filter(p => p.area === currentArea);
             const centerName = cityCenters[currentArea];
 
@@ -350,45 +345,62 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>`;
             }
 
-            // 2. ΧΩΡΙΑ
+            // 2. ΧΩΡΙΑ (ΜΕ ΠΟΛΛΑΠΛΑ ΦΑΡΜΑΚΕΙΑ)
             const uniqueSubAreas = [...new Set(areaPharmacies.map(p => p.subArea))]
                 .filter(sub => sub !== centerName).sort();
 
             if (uniqueSubAreas.length > 0) {
                 uniqueSubAreas.forEach(sub => {
-                    const activePharmaInSub = activePharmacies.find(p => p.subArea === sub);
+                    // Βρες ΟΛΑ τα ενεργά φαρμακεία στο χωριό και ταξινόμησέ τα
+                    const activePharmasInSub = activePharmacies
+                        .filter(p => p.subArea === sub)
+                        .sort((a, b) => a.name.localeCompare(b.name));
+
+                    const hasPharmacy = activePharmasInSub.length > 0;
                     const row = document.createElement('div');
-                    row.className = `location-row ${activePharmaInSub ? 'has-pharmacy' : ''}`;
+                    row.className = `location-row ${hasPharmacy ? 'has-pharmacy' : ''}`;
+
+                    // Λίστα ονομάτων για την προεπισκόπηση
+                    const previewText = activePharmasInSub.map(p => p.name).join(', ');
 
                     let headerHTML = `
                         <div class="location-header">
                             <div class="location-info">
                                 <span class="village-name">${sub}</span>
-                                ${activePharmaInSub 
-                                    ? `<span class="pharmacy-preview"><i class="fas fa-check-circle"></i> ${activePharmaInSub.name}</span>` 
+                                ${hasPharmacy
+                                    ? `<span class="pharmacy-preview"><i class="fas fa-check-circle"></i> ${previewText}</span>` 
                                     : `<span style="font-size:0.8rem; color:#bbb;">-</span>`}
                             </div>
-                            ${activePharmaInSub ? '<i class="fas fa-chevron-down" style="color:#aaa;"></i>' : ''}
+                            ${hasPharmacy ? '<i class="fas fa-chevron-down" style="color:#aaa;"></i>' : ''}
                         </div>`;
 
                     let detailsHTML = '';
-                    if (activePharmaInSub) {
-                        const mapLink = activePharmaInSub.map ? activePharmaInSub.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activePharmaInSub.name + " " + activePharmaInSub.address + " " + activePharmaInSub.area)}`;
-                        detailsHTML = `
-                            <div class="location-details">
-                                <div class="details-content">
-                                    <p style="margin:0 0 10px; font-weight:bold;">${activePharmaInSub.name}</p>
-                                    <p style="margin:0 0 10px; color:#555;"><i class="fas fa-map-marker-alt"></i> ${activePharmaInSub.address}</p>
+                    if (hasPharmacy) {
+                        detailsHTML = '<div class="location-details"><div class="details-content">';
+                        
+                        // Προσθήκη κάθε φαρμακείου στη λίστα
+                        activePharmasInSub.forEach((pharma, index) => {
+                            const mapLink = pharma.map ? pharma.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pharma.name + " " + pharma.address + " " + pharma.area)}`;
+                            
+                            // Προσθήκη διαχωριστικής γραμμής αν δεν είναι το πρώτο
+                            if (index > 0) detailsHTML += '<hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">';
+
+                            detailsHTML += `
+                                <div class="pharma-block">
+                                    <p style="margin:0 0 5px; font-weight:bold; color:#2c3e50;">${pharma.name}</p>
+                                    <p style="margin:0 0 10px; color:#555; font-size:0.95rem;"><i class="fas fa-map-marker-alt"></i> ${pharma.address}</p>
                                     <div style="display:flex; gap:10px;">
-                                        <a href="tel:${activePharmaInSub.phone}" class="btn btn-call" style="background:var(--primary-color); color:white; padding:10px; border-radius:5px; text-decoration:none; flex:1; text-align:center;">Κλήση</a>
-                                        <a href="${mapLink}" target="_blank" class="btn btn-map" style="background:white; border:1px solid #ccc; color:#333; padding:10px; border-radius:5px; text-decoration:none; flex:1; text-align:center;">Χάρτης</a>
+                                        <a href="tel:${pharma.phone}" class="btn btn-call" style="background:var(--primary-color); color:white; padding:8px; border-radius:5px; text-decoration:none; flex:1; text-align:center; font-size:0.9rem;">Κλήση</a>
+                                        <a href="${mapLink}" target="_blank" class="btn btn-map" style="background:white; border:1px solid #ccc; color:#333; padding:8px; border-radius:5px; text-decoration:none; flex:1; text-align:center; font-size:0.9rem;">Χάρτης</a>
                                     </div>
-                                </div>
-                            </div>`;
+                                </div>`;
+                        });
+
+                        detailsHTML += '</div></div>';
                     }
                     row.innerHTML = headerHTML + detailsHTML;
                     
-                    if(activePharmaInSub) {
+                    if(hasPharmacy) {
                         row.querySelector('.location-header').addEventListener('click', () => {
                             const details = row.querySelector('.location-details');
                             const icon = row.querySelector('.fa-chevron-down');
