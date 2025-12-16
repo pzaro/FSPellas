@@ -4,6 +4,7 @@
     --accent-bg: #e8f5e9;
     --bg-color: #f4f6f8;
     --text-dark: #2c3e50;
+    --ticker-bg: #d32f2f; /* Κόκκινο για να ξεχωρίζει η διαφήμιση */
 }
 
 body {
@@ -20,10 +21,45 @@ header {
     text-align: center;
     padding: 1.5rem 1rem;
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    position: relative;
+    z-index: 10;
 }
 
+/* --- ΚΙΝΟΥΜΕΝΗ ΤΑΙΝΙΑ (TICKER) --- */
+.ticker-wrap {
+    position: relative;
+    background: var(--ticker-bg);
+    width: 100%;
+    overflow: hidden;
+    height: 40px;
+    padding-top: 8px;
+    box-sizing: border-box;
+    display: none; /* Κρυφό αν δεν υπάρχει μήνυμα */
+}
+
+.ticker {
+    display: inline-block;
+    white-space: nowrap;
+    padding-left: 100%;
+    animation: ticker-move 20s linear infinite;
+}
+
+.ticker-item {
+    display: inline-block;
+    padding: 0 2rem;
+    font-size: 1rem;
+    color: white;
+    font-weight: bold;
+}
+
+@keyframes ticker-move {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
+}
+/* ---------------------------------- */
+
 .container {
-    max-width: 1000px; /* Μεγάλωσα λίγο το πλάτος */
+    max-width: 1000px;
     margin: 0 auto;
     padding: 20px 15px;
 }
@@ -56,15 +92,14 @@ header {
     transform: scale(1.05);
 }
 
-/* --- LAYOUT GRID (Η μεγάλη αλλαγή) --- */
+/* Layout */
 .main-layout {
     display: grid;
     gap: 20px;
-    /* Σε κινητά είναι 1 στήλη. Σε PC θα γίνει 2 στήλες (δείτε παρακάτω) */
     grid-template-columns: 1fr; 
 }
 
-/* Τίτλοι ενοτήτων */
+/* Titles */
 .featured-section h2, .villages-section h3 {
     margin-top: 0;
     font-size: 1.1rem;
@@ -76,7 +111,7 @@ header {
     margin-bottom: 15px;
 }
 
-/* --- ΚΑΡΤΑ ΚΕΝΤΡΙΚΟΥ ΦΑΡΜΑΚΕΙΟΥ (Featured) --- */
+/* Cards */
 .featured-card {
     background: white;
     border-radius: 12px;
@@ -86,86 +121,25 @@ header {
     text-align: center;
 }
 
-.featured-card h3 {
-    font-size: 1.5rem;
-    margin: 10px 0;
-    color: var(--text-dark);
-}
+.featured-card h3 { font-size: 1.5rem; margin: 10px 0; color: var(--text-dark); }
+.featured-card .address { font-size: 1.1rem; color: #555; margin-bottom: 10px; }
+.featured-card .big-phone { display: block; font-size: 1.4rem; font-weight: bold; color: var(--primary-color); margin: 15px 0; text-decoration: none; }
 
-.featured-card .address {
-    font-size: 1.1rem;
-    color: #555;
-    margin-bottom: 10px;
-}
-
-.featured-card .big-phone {
-    display: block;
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: var(--primary-color);
-    margin: 15px 0;
-    text-decoration: none;
-}
-
-.featured-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.btn-large {
-    flex: 1;
-    padding: 12px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    text-align: center;
-    font-size: 1rem;
-}
-
+.featured-actions { display: flex; gap: 10px; margin-top: 20px; }
+.btn-large { flex: 1; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center; font-size: 1rem; }
 .btn-call-large { background: var(--primary-color); color: white; box-shadow: 0 4px 10px rgba(0,133,66,0.3); }
 .btn-map-large { background: white; color: var(--text-dark); border: 2px solid #eee; }
 
-/* --- ΛΙΣΤΑ ΧΩΡΙΩΝ (Accordion) --- */
-.location-row {
-    background: white;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    border: 1px solid #eee;
-}
-
+/* List */
+.location-row { background: white; border-radius: 8px; margin-bottom: 8px; border: 1px solid #eee; }
 .location-row.has-pharmacy { border-left: 4px solid var(--primary-color); }
-
-.location-header {
-    padding: 12px 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-}
-
+.location-header { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
 .village-name { font-weight: bold; font-size: 0.95rem; }
 .pharmacy-preview { font-size: 0.85rem; color: var(--primary-color); display: block; margin-top: 2px; }
-
-.location-details {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    background: var(--accent-bg);
-}
-
+.location-details { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: var(--accent-bg); }
 .details-content { padding: 15px; }
 
-/* --- Responsive Design (PC vs Mobile) --- */
 @media (min-width: 768px) {
-    .main-layout {
-        /* Σε οθόνες μεγαλύτερες από 768px (Tablet/PC), κάντο 2 στήλες */
-        grid-template-columns: 45% 55%; 
-        align-items: start;
-    }
-    
-    .featured-section {
-        position: sticky; /* Για να μένει σταθερό όταν κάνεις scroll τη λίστα */
-        top: 20px;
-    }
+    .main-layout { grid-template-columns: 45% 55%; align-items: start; }
+    .featured-section { position: sticky; top: 20px; }
 }
