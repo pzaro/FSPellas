@@ -112,6 +112,7 @@ const pharmacies = [
     { id: 44, name: "ΖΟΥΜΠΟΥΡΙΔΟΥ ΕΥΔΟΞΙΑ", area: "Γιαννιτσά", subArea: "Ν. Μυλότοπος", address: "Ν. ΜΥΛΟΤΟΠΟΣ", phone: "2382052210" },
     { id: 45, name: "ΘΕΜΕΛΗ ΜΗΝΑΔΩΡΑ", area: "Γιαννιτσά", subArea: "Αξός", address: "ΑΞΟΣ", phone: "2382051512" },
     { id: 50, name: "ΚΑΡΑΓΙΑΝΝΗ ΑΝΝΑ", area: "Γιαννιτσά", subArea: "Π. Πέλλα", address: "Π. ΠΕΛΛΑ", phone: "2382031447" },
+    { id: 54, name: "ΚΑΡΑΠΟΥΡΤΖΙΔΗΣ ΑΝΑΣΤΑΣΙΟΣ", area: "Γιαννιτσά", subArea: "Αγ. Λουκάς", address: "ΑΓ.ΛΟΥΚΑΣ", phone: "2382063620" },
     { id: 61, name: "ΚΟΡΥΦΙΔΟΥ ΑΝΤΩΝΙΑ", area: "Γιαννιτσά", subArea: "Καρυώτισσα", address: "ΚΑΡΥΩΤΙΣΣΑ", phone: "2382041545" },
     { id: 64, name: "ΚΟΥΠΑΡΑΝΙΔΟΥ ΚΑΛΗ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "ΤΑΓ. ΓΕΩΡΓΟΥΛΗ 23", phone: "2382024825" },
     { id: 65, name: "ΚΟΥΤΣΟΚΩΣΤΑ ΙΩΑΝΝΑ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "ΑΦΩΝ ΠΑΠΑΙΩΑΝΝΟΥ", phone: "2382024141" },
@@ -150,7 +151,7 @@ const pharmacies = [
     { id: 16, name: "ΒΕΧΤΣΑΛΗΣ ΣΩΤΗΡΙΟΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "Μ.ΑΛΕΞΑΝΔΡΟΥ 29", phone: "2381082057" },
     { id: 30, name: "ΓΩΝΙΑΔΗ ΛΙΑΝΑ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "24ης ΙΟΥΛΙΟΥ 8", phone: "2381089588" },
     { id: 33, name: "ΔΗΜΗΤΡΙΑΔΟΥ ΑΛΕΞΑΝΔΡΑ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΣΑΦΡΑΠΟΛΕΩΣ 17", phone: "2381089199" },
-    { id: 36, name: "ΔΟΥΛΚΕΡΙΔΗΣ ΧΑΡΑΛΑΜΠΟΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΕΘ. ΑΝΤΙΣΤΑΣΕΩΣ 24", phone: "2381088845" },
+    { id: 36, name: "ΔΟΥΛΚΕΡΙΔΗΣ ΧΑΡΑΛΑΜΠΟΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΕΘΝ. ΑΝΤΙΣΤΑΣΕΩΣ 24", phone: "2381088845" },
     { id: 38, name: "ΕΜΜΑΝΟΥΗΛΙΔΗΣ ΓΕΩΡΓΙΟΣ", area: "Σκύδρα", subArea: "Καλύβια", address: "ΚΑΛΥΒΙΑ", phone: "2381061195" },
     { id: 40, name: "ΧΕΛΗ ΑΝΑΣΤΑΣΙΑ", area: "Σκύδρα", subArea: "Μάνδαλο", address: "ΜΑΝΔΑΛΟ", phone: "2381097677" },
     { id: 48, name: "ΚΑΛΑΦΑΤΗΣ ΣΤΑΥΡΟΣ", area: "Σκύδρα", subArea: "Πρ. Ηλίας", address: "ΠΡ. ΗΛΙΑΣ", phone: "2381041959" },
@@ -176,15 +177,14 @@ const pharmacies = [
     { id: 4, name: "ΑΔΑΜΙΔΗΣ ΘΕΟΔΟΣΙΟΣ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Β. ΠΑΥΛΟΥ 77", phone: "2382062100" },
     { id: 5, name: "ΑΔΑΜΙΔΟΥ ΜΑΡΘΑ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Β. ΠΑΥΛΟΥ 77", phone: "2382062100" },
     { id: 39, name: "ΕΜΜΑΝΟΥΗΛΙΔΗΣ ΚΩΝΣΤΑΝΤΙΝΟΣ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "ΚΡΥΑ ΒΡΥΣΗ", phone: "2382061028" },
-    { id: 53, name: "ΚΑΡΑΟΥΛΑΝΗ ΕΥΑΓΓΕΛΙΑ", area: "Γιαννιτσά", subArea: "Γαλατάδες", address: "ΓΑΛΑΤΑΔΕΣ", phone: "2382042299" },
+    { id: 53, name: "ΚΑΡΑΟΥΛΑΝΗ ΕΥΑΓΓΕΛΙΑ", area: "Κρύα Βρύση", subArea: "Γαλατάδες", address: "ΓΑΛΑΤΑΔΕΣ", phone: "2382042299" },
     { id: 59, name: "ΚΙΤΚΑ ΑΝΑΣΤΑΣΙΑ", area: "Κρύα Βρύση", subArea: "Ακρολίμνη", address: "ΑΚΡΟΛΙΜΝΗ", phone: "2382063656" },
     { id: 70, name: "ΛΑΠΠΑ ΑΓΓΕΛΑ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Μ. ΑΛΕΞΑΝΔΡΟΥ 8", phone: "2382061786" },
     { id: 84, name: "ΜΙΧΑΚΗ ΑΘΗΝΑ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "ΒΕΝΙΖΕΛΟΥ 71", phone: "2382061124" },
     { id: 93, name: "ΝΑΥΡΟΖΙΔΗΣ ΑΝΑΣΤΑΣΙΟΣ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Β. ΠΑΥΛΟΥ 32", phone: "2382062120" },
     { id: 106, name: "ΠΑΡΔΑΛΗ ΓΕΩΡΓΙΑ", area: "Κρύα Βρύση", subArea: "Εσώβαλτα", address: "ΕΣΩΒΑΛΤΑ", phone: "2382071001" },
-    { id: 120, name: "ΣΙΑΜΑΝΤΑ ΠΕΤΡΙΝΑ", area: "Γιαννιτσά", subArea: "Γαλατάδες", address: "ΓΑΛΑΤΑΔΕΣ", phone: "2382042002" },
+    { id: 120, name: "ΣΙΑΜΑΝΤΑ ΠΕΤΡΙΝΑ", area: "Κρύα Βρύση", subArea: "Γαλατάδες", address: "ΓΑΛΑΤΑΔΕΣ", phone: "2382042002" },
     { id: 155, name: "ΧΡΥΣΑΓΗΣ ΧΑΡΑΛΑΜΠΟΣ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "ΒΑΣ. ΠΑΥΛΟΥ 91", phone: "2382061028" },
-    { id: 54, name: "ΚΑΡΑΠΟΥΡΤΖΙΔΗΣ ΑΝΑΣΤΑΣΙΟΣ", area: "Κρύα Βρύση", subArea: "Αγ. Λουκάς", address: "ΑΓ.ΛΟΥΚΑΣ", phone: "2382063620" },
     { id: 157, name: "ΧΥΤΑ ΕΛΕΝΗ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "ΑΙΣΧΥΛΟΥ 19", phone: "2382062010" }
 ];
 
@@ -202,19 +202,25 @@ function normalize(str) {
         .trim();
 }
 
-// 2. Έλεγχος Ημερομηνίας (Υποστηρίζει πολλαπλές μορφές)
-function isToday(dateStr) {
+// 2. Υπολογισμός Ενεργής Ημερομηνίας (Shift Date)
+function getShiftDate() {
+    const now = new Date();
+    // Αν η ώρα είναι < 8, πάμε στην προηγούμενη μέρα
+    if (now.getHours() < 8) {
+        now.setDate(now.getDate() - 1);
+    }
+    return now;
+}
+
+// 3. Έλεγχος αν η ημερομηνία στο CSV ταιριάζει με την Ενεργή Ημερομηνία
+function isEffectiveDate(dateStr, effectiveDate) {
     if (!dateStr) return false;
     
-    const today = new Date();
-    const d = today.getDate();
-    const m = today.getMonth() + 1;
-    const y = today.getFullYear();
+    const d = effectiveDate.getDate();
+    const m = effectiveDate.getMonth() + 1;
+    const y = effectiveDate.getFullYear();
     const shortY = String(y).slice(-2);
 
-    // Φτιάχνουμε τα strings για σύγκριση (χωρίς padding για ευελιξία)
-    // Π.χ. 2025-12-17, 17/12/2025, 17-12-25, 17/12 (τρέχον έτος)
-    
     // Καθαρίζουμε το dateStr από το Sheet
     const cleanDate = dateStr.trim().replace(/-/g, '/'); // Αλλάζουμε παύλες σε κάθετες
     
@@ -234,7 +240,7 @@ function isToday(dateStr) {
     return validFormats.some(f => cleanDate === f || cleanDate === f.replace(/\//g, '-'));
 }
 
-// 3. ΑΣΦΑΛΗΣ ΑΝΑΓΝΩΣΗ CSV (Parse Line)
+// 4. ΑΣΦΑΛΗΣ ΑΝΑΓΝΩΣΗ CSV (Parse Line)
 function parseCSVLine(text) {
     let result = [];
     let cell = '';
@@ -276,9 +282,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if(cityTitle) cityTitle.parentNode.insertBefore(fileLinkContainer, cityTitle.nextSibling);
     }
 
-    const todayObj = new Date();
+    // Υπολογισμός και εμφάνιση της "Ενεργής" Ημερομηνίας
+    const effectiveDate = getShiftDate();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    dateDisplay.textContent = todayObj.toLocaleDateString('el-GR', options);
+    dateDisplay.textContent = effectiveDate.toLocaleDateString('el-GR', options);
 
     fetchGoogleSheet();
 
@@ -302,13 +309,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (cols.length < 2) return; 
 
                 // --- ΔΙΑΒΑΖΟΥΜΕ ΤΙΣ ΣΤΗΛΕΣ ---
-                // Col 0: Date
-                // Col 1: Area
-                // Col 2: Night IDs (Διανυκτερεύοντα)
-                // Col 3: Day IDs (Διημερεύοντα - ΝΕΟ)
-                // Col 4: Link
-                // Col 5: AdText (Banner)
-
                 const date = cols[0]; 
                 const area = cols[1];
                 
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let nightIdsRaw = cols[2] ? cols[2].replace(/"/g, '') : ""; 
                 const nightIds = nightIdsRaw.split(/[-,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
                 
-                // Day IDs (Col 3) - ΝΕΟ
+                // Day IDs (Col 3)
                 let dayIdsRaw = cols[3] ? cols[3].replace(/"/g, '') : ""; 
                 const dayIds = dayIdsRaw.split(/[-,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
 
@@ -326,8 +326,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 globalSchedule.push({ date, area, nightIds, dayIds, link, adText: tickerMsg });
             });
 
-            // Ticker Logic
-            const todayAd = globalSchedule.find(s => isToday(s.date) && s.adText && s.adText.length > 2);
+            // Ticker Logic (Χρήση isEffectiveDate)
+            const todayAd = globalSchedule.find(s => isEffectiveDate(s.date, effectiveDate) && s.adText && s.adText.length > 2);
             
             if (todayAd && todayAd.adText && tickerText) {
                 tickerText.textContent = todayAd.adText;
@@ -378,8 +378,9 @@ document.addEventListener('DOMContentLoaded', () => {
             fileLinkContainer.innerHTML = '';
             cityTitle.textContent = `Εφημερεύει: ${currentArea}`;
 
+            // Χρήση isEffectiveDate αντί για απλό date match
             const scheduleEntry = globalSchedule.find(s => 
-                isToday(s.date) && 
+                isEffectiveDate(s.date, effectiveDate) && 
                 normalize(s.area) === normalize(currentArea)
             );
             
