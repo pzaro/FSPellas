@@ -112,7 +112,8 @@ const pharmacies = [
     { id: 44, name: "ΖΟΥΜΠΟΥΡΙΔΟΥ ΕΥΔΟΞΙΑ", area: "Γιαννιτσά", subArea: "Ν. Μυλότοπος", address: "Ν. ΜΥΛΟΤΟΠΟΣ", phone: "2382052210" },
     { id: 45, name: "ΘΕΜΕΛΗ ΜΗΝΑΔΩΡΑ", area: "Γιαννιτσά", subArea: "Αξός", address: "ΑΞΟΣ", phone: "2382051512" },
     { id: 50, name: "ΚΑΡΑΓΙΑΝΝΗ ΑΝΝΑ", area: "Γιαννιτσά", subArea: "Π. Πέλλα", address: "Π. ΠΕΛΛΑ", phone: "2382031447" },
-    { id: 54, name: "ΚΑΡΑΠΟΥΡΤΖΙΔΗΣ ΑΝΑΣΤΑΣΙΟΣ", area: "Κρύα Βρύση", subArea: "Αγ. Λουκάς", address: "ΑΓ. ΛΟΥΚΑΣ", phone: "2382063620" },
+    { id: 53, name: "ΚΑΡΑΟΥΛΑΝΗ ΕΥΑΓΓΕΛΙΑ", area: "Γιαννιτσά", subArea: "Γαλατάδες", address: "ΓΑΛΑΤΑΔΕΣ", phone: "2382042299" },
+    { id: 54, name: "ΚΑΡΑΠΟΥΡΤΖΙΔΗΣ ΑΝΑΣΤΑΣΙΟΣ", area: "Κρύα Βρύση", subArea: "Αγ. Λουκάς", address: "ΑΓ.ΛΟΥΚΑΣ", phone: "2382063620" },
     { id: 61, name: "ΚΟΡΥΦΙΔΟΥ ΑΝΤΩΝΙΑ", area: "Γιαννιτσά", subArea: "Καρυώτισσα", address: "ΚΑΡΥΩΤΙΣΣΑ", phone: "2382041545" },
     { id: 64, name: "ΚΟΥΠΑΡΑΝΙΔΟΥ ΚΑΛΗ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "ΤΑΓ. ΓΕΩΡΓΟΥΛΗ 23", phone: "2382024825" },
     { id: 65, name: "ΚΟΥΤΣΟΚΩΣΤΑ ΙΩΑΝΝΑ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "ΑΦΩΝ ΠΑΠΑΙΩΑΝΝΟΥ", phone: "2382024141" },
@@ -130,6 +131,7 @@ const pharmacies = [
     { id: 112, name: "ΠΛΟΥΓΑΡΛΗΣ ΔΗΜΗΤΡΙΟΣ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "ΕΘ. ΑΝΤΙΣΤΑΣΕΩΣ 4", phone: "2382028806" },
     { id: 113, name: "ΠΟΛΥΧΡΟΝΙΑΔΟΥ ΜΑΡΙΑ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "Δ. ΣΕΜΕΡΤΖΙΔΗ", phone: "2382022620" },
     { id: 117, name: "ΣΑΡΑΜΑΝΤΟΥ ΣΟΥΛΤΑΝΑ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "Χ. ΔΗΜΗΤΡΙΟΥ 1", phone: "2382024134" },
+    { id: 120, name: "ΣΙΑΜΑΝΤΑ ΠΕΤΡΙΝΑ", area: "Γιαννιτσά", subArea: "Γαλατάδες", address: "ΓΑΛΑΤΑΔΕΣ", phone: "2382042002" },
     { id: 123, name: "ΣΙΓΚΟΥΔΗ ΑΙΚΤΕΡΙΝΗ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "ΖΑΜΙΔΗ 4", phone: "2382023881" },
     { id: 127, name: "ΣΚΡΕΚΑ ΘΕΟΓΝΩΣΙΑ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "ΤΣΑΚΜΑΚΗ 72", phone: "2382024753" },
     { id: 128, name: "ΣΟΥΜΠΑΣΗΣ ΔΗΜΗΤΡΙΟΣ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "ΒΕΝΙΖΕΛΟΥ 180", phone: "2382081100" },
@@ -145,17 +147,43 @@ const pharmacies = [
     { id: 151, name: "ΧΑΤΖΗΔΗΜΗΤΡΙΟΥ ΙΟΥΛΙΑ", area: "Γιαννιτσά", subArea: "Μελίσσι", address: "ΜΕΛΙΣΣΙ", phone: "2382042444" },
     { id: 156, name: "ΧΡΥΣΟΣΤΟΜΙΔΗΣ ΑΝΤΩΝΙΟΣ", area: "Γιαννιτσά", subArea: "Γιαννιτσά (Πόλη)", address: "ΕΛ. ΒΕΝΙΖΕΛΟΥ 178", phone: "2382025735" },
 
+    // --- ΣΚΥΔΡΑ ---
+    { id: 8, name: "ΑΛΜΠΑΝΙΔΟΥ ΒΑΣΙΛΙΚΗ", area: "Σκύδρα", subArea: "Αρσένι", address: "ΑΡΣΕΝΙ", phone: "2381071194" },
+    { id: 13, name: "ΒΑΡΣΑΚΟΠΟΥΛΟΥ ΒΑΣΙΛΙΚΗ", area: "Σκύδρα", subArea: "Ριζό", address: "ΡΙΖΟ", phone: "2381071604" },
+    { id: 16, name: "ΒΕΧΤΣΑΛΗΣ ΣΩΤΗΡΙΟΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "Μ.ΑΛΕΞΑΝΔΡΟΥ 29", phone: "2381082057" },
+    { id: 30, name: "ΓΩΝΙΑΔΗ ΛΙΑΝΑ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "24ης ΙΟΥΛΙΟΥ 8", phone: "2381089588" },
+    { id: 33, name: "ΔΗΜΗΤΡΙΑΔΟΥ ΑΛΕΞΑΝΔΡΑ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΣΑΦΡΑΠΟΛΕΩΣ 17", phone: "2381089199" },
+    { id: 36, name: "ΔΟΥΛΚΕΡΙΔΗΣ ΧΑΡΑΛΑΜΠΟΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΕΘΝ. ΑΝΤΙΣΤΑΣΕΩΣ 24", phone: "2381088845" },
+    { id: 38, name: "ΕΜΜΑΝΟΥΗΛΙΔΗΣ ΓΕΩΡΓΙΟΣ", area: "Σκύδρα", subArea: "Καλύβια", address: "ΚΑΛΥΒΙΑ", phone: "2381061195" },
+    { id: 40, name: "ΧΕΛΗ ΑΝΑΣΤΑΣΙΑ", area: "Σκύδρα", subArea: "Μάνδαλο", address: "ΜΑΝΔΑΛΟ", phone: "2381097677" },
+    { id: 48, name: "ΚΑΛΑΦΑΤΗΣ ΣΤΑΥΡΟΣ", area: "Σκύδρα", subArea: "Πρ. Ηλίας", address: "ΠΡ. ΗΛΙΑΣ", phone: "2381041959" },
+    { id: 77, name: "ΜΑΝΘΟΥ ΧΡΗΣΤΟΣ", area: "Σκύδρα", subArea: "Λιποχώρι", address: "ΛΙΠΟΧΩΡΙ", phone: "2381400770" },
+    { id: 83, name: "ΜΗΝΤΙΛΑΚΗ ΔΕΣΠΟΙΝΑ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΕΘΝ. ΑΝΤΙΣΤΑΣΗΣ 8", phone: "2381088875" },
+    { id: 91, name: "ΜΠΟΥΝΤΩΝΑΣ ΕΜΜΑΝΟΥΗΛ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "Μ.ΑΛΕΞΑΝΔΡΟΥ 30", phone: "2381089333" },
+    { id: 92, name: "ΝΑΤΣΚΟΥ ΦΩΤΕΙΝΗ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "Μ. ΑΛΕΞΑΝΔΡΟΥ 33", phone: "2381089221" },
+    { id: 94, name: "ΝΟΥΣΗΚΥΡΟΥ ΓΕΩΡΓΙΟΣ", area: "Σκύδρα", subArea: "Σεβαστειανά", address: "ΣΕΒΑΣΤΕΙΑΝΑ", phone: "2381089565" },
+    { id: 96, name: "ΝΟΥΣΗΚΥΡΟΥ ΣΟΦΙΑ", area: "Σκύδρα", subArea: "Λουτροχώρι", address: "ΛΟΥΤΡΟΧΩΡΙ", phone: "2381052810" },
+    { id: 99, name: "ΠΑΠΑΓΕΩΡΓΙΟΥ ΜΑΡΙΑ", area: "Σκύδρα", subArea: "Καλή", address: "ΚΑΛΗ", phone: "2381041884" },
+    { id: 103, name: "ΠΑΠΑΪΩΑΝΝΟΥ ΜΑΡΙΑ", area: "Σκύδρα", subArea: "Πετριά", address: "ΠΕΤΡΙΑ", phone: "2381071056" },
+    { id: 114, name: "ΣΑΒΒΙΔΗΣ ΠΑΝΑΓΙΩΤΗΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "Μ. ΑΛΕΞΑΝΔΡΟΥ 40", phone: "2381088173" },
+    { id: 119, name: "ΣΔΡΑΥΚΑΚΗΣ ΒΑΣΙΛΕΙΟΣ", area: "Σκύδρα", subArea: "Δάφνη", address: "ΔΑΦΝΗ", phone: "2381061290" },
+    { id: 124, name: "ΣΙΔΗΡΟΠΟΥΛΟΥ ΜΑΡΙΚΑ", area: "Σκύδρα", subArea: "Μαυροβούνι", address: "ΜΑΥΡΟΒΟΥΝΙ", phone: "2381088532" },
+    { id: 126, name: "ΣΚΕΝΔΕΡΙΔΗΣ ΠΑΥΛΟΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΕΘ.ΑΝΤΙΣΤΑΣΕΩΣ 24", phone: "2381088845" },
+    { id: 135, name: "ΤΖΑΙΚΟΥ ΧΡΙΣΤΙΝΑ", area: "Σκύδρα", subArea: "Άσπρο", address: "ΑΣΠΡΟ", phone: "2381061040" },
+    { id: 138, name: "ΤΡΙΑΝΤΑΦΥΛΛΙΔΗΣ ΛΑΖΑΡΟΣ", area: "Σκύδρα", subArea: "Καλή", address: "ΚΑΛΗ", phone: "2381041464" },
+    { id: 141, name: "ΤΣΕΛΕΠΗ ΜΑΡΙΑ", area: "Σκύδρα", subArea: "Λιπαρό", address: "ΛΙΠΑΡΟ", phone: "2381061851" },
+    { id: 147, name: "ΦΑΝΤΙΔΟΥ ΕΙΡΗΝΗ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΑΡΓΥΡΟΥΠΟΛΕΩΣ 23", phone: "2381089980" },
+    { id: 150, name: "ΧΑΤΖΗΔΗΜΟΥ ΓΡΗΓΟΡΙΟΣ", area: "Σκύδρα", subArea: "Καλλίπολη", address: "ΚΑΛΛΙΠΟΛΗ", phone: "2381094000" },
+
     // --- ΚΡΥΑ ΒΡΥΣΗ ---
     { id: 4, name: "ΑΔΑΜΙΔΗΣ ΘΕΟΔΟΣΙΟΣ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Β. ΠΑΥΛΟΥ 77", phone: "2382062100" },
     { id: 5, name: "ΑΔΑΜΙΔΟΥ ΜΑΡΘΑ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Β. ΠΑΥΛΟΥ 77", phone: "2382062100" },
     { id: 39, name: "ΕΜΜΑΝΟΥΗΛΙΔΗΣ ΚΩΝΣΤΑΝΤΙΝΟΣ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "ΚΡΥΑ ΒΡΥΣΗ", phone: "2382061028" },
-    { id: 53, name: "ΚΑΡΑΟΥΛΑΝΗ ΕΥΑΓΓΕΛΙΑ", area: "Κρύα Βρύση", subArea: "Γαλατάδες", address: "ΓΑΛΑΤΑΔΕΣ", phone: "2382042299" },
     { id: 59, name: "ΚΙΤΚΑ ΑΝΑΣΤΑΣΙΑ", area: "Κρύα Βρύση", subArea: "Ακρολίμνη", address: "ΑΚΡΟΛΙΜΝΗ", phone: "2382063656" },
     { id: 70, name: "ΛΑΠΠΑ ΑΓΓΕΛΑ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Μ. ΑΛΕΞΑΝΔΡΟΥ 8", phone: "2382061786" },
     { id: 84, name: "ΜΙΧΑΚΗ ΑΘΗΝΑ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "ΒΕΝΙΖΕΛΟΥ 71", phone: "2382061124" },
     { id: 93, name: "ΝΑΥΡΟΖΙΔΗΣ ΑΝΑΣΤΑΣΙΟΣ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "Β. ΠΑΥΛΟΥ 32", phone: "2382062120" },
     { id: 106, name: "ΠΑΡΔΑΛΗ ΓΕΩΡΓΙΑ", area: "Κρύα Βρύση", subArea: "Εσώβαλτα", address: "ΕΣΩΒΑΛΤΑ", phone: "2382071001" },
-    { id: 120, name: "ΣΙΑΜΑΝΤΑ ΠΕΤΡΙΝΑ", area: "Κρύα Βρύση", subArea: "Γαλατάδες", address: "ΓΑΛΑΤΑΔΕΣ", phone: "2382042002" },
     { id: 155, name: "ΧΡΥΣΑΓΗΣ ΧΑΡΑΛΑΜΠΟΣ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "ΒΑΣ. ΠΑΥΛΟΥ 91", phone: "2382061028" },
     { id: 157, name: "ΧΥΤΑ ΕΛΕΝΗ", area: "Κρύα Βρύση", subArea: "Κρύα Βρύση (Κέντρο)", address: "ΑΙΣΧΥΛΟΥ 19", phone: "2382062010" }
 ];
@@ -164,55 +192,46 @@ let globalSchedule = [];
 
 // --- ΒΟΗΘΗΤΙΚΕΣ ΣΥΝΑΡΤΗΣΕΙΣ ---
 
-// 1. Κανονικοποίηση Κειμένου (Αγνοεί τόνους/κενά)
 function normalize(str) {
     if (!str) return "";
     return str
         .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Αφαιρεί τόνους
-        .replace(/\s+/g, "") // Αφαιρεί όλα τα κενά
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+        .replace(/\s+/g, "")
         .trim();
 }
 
-// 2. Υπολογισμός Ενεργής Ημερομηνίας (Shift Date)
+function parseDateStr(dateStr) {
+    if (!dateStr) return null;
+    const cleanStr = dateStr.trim().replace(/-/g, '/');
+    const parts = cleanStr.split('/');
+    
+    if (parts.length === 3) {
+        let d = parseInt(parts[0], 10);
+        let m = parseInt(parts[1], 10);
+        let y = parseInt(parts[2], 10);
+        
+        if (y < 100) y += 2000;
+        
+        return { d, m, y };
+    }
+    return null;
+}
+
 function getShiftDate() {
     const now = new Date();
     // Αν η ώρα είναι < 8, πάμε στην προηγούμενη μέρα
     if (now.getHours() < 8) {
         now.setDate(now.getDate() - 1);
     }
-    return now;
+    return {
+        d: now.getDate(),
+        m: now.getMonth() + 1,
+        y: now.getFullYear(),
+        obj: now 
+    };
 }
 
-// 3. Έλεγχος αν η ημερομηνία στο CSV ταιριάζει με την Ενεργή Ημερομηνία
-function isEffectiveDate(dateStr, effectiveDate) {
-    if (!dateStr) return false;
-    
-    const d = effectiveDate.getDate();
-    const m = effectiveDate.getMonth() + 1;
-    const y = effectiveDate.getFullYear();
-    const shortY = String(y).slice(-2);
-
-    // Καθαρίζουμε το dateStr από το Sheet
-    const cleanDate = dateStr.trim().replace(/-/g, '/'); // Αλλάζουμε παύλες σε κάθετες
-    
-    const validFormats = [
-        `${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`, // 2025/12/17
-        `${d}/${m}/${y}`,         // 17/12/2025
-        `${d}/${String(m).padStart(2, '0')}/${y}`, // 17/12/2025
-        `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`, // 17/12/2025
-        `${d}/${m}/${shortY}`,    // 17/12/25
-        `${d}/${m}`               // 17/12 (υποθέτει τρέχον έτος)
-    ];
-
-    // Ειδικός έλεγχος για YYYY-MM-DD (Excel default)
-    if (cleanDate === `${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`) return true;
-    
-    // Ελέγχουμε αν ταιριάζει σε κάποιο format
-    return validFormats.some(f => cleanDate === f || cleanDate === f.replace(/\//g, '-'));
-}
-
-// 4. ΑΣΦΑΛΗΣ ΑΝΑΓΝΩΣΗ CSV (Parse Line)
 function parseCSVLine(text) {
     let result = [];
     let cell = '';
@@ -220,18 +239,40 @@ function parseCSVLine(text) {
 
     for (let i = 0; i < text.length; i++) {
         let char = text[i];
-
-        if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
+        if (char === '"') { inQuotes = !inQuotes; }
+        else if (char === ',' && !inQuotes) {
             result.push(cell.trim());
             cell = '';
-        } else {
-            cell += char;
-        }
+        } else { cell += char; }
     }
     result.push(cell.trim());
     return result;
+}
+
+// Συνάρτηση "Αναζήτησης" Φαρμακείου από το ID ή το Όνομα
+function findPharmacyIds(rawValue, allPharmacies) {
+    if (!rawValue) return [];
+    
+    // Αν είναι αριθμός (π.χ. "155")
+    if (/^\d+$/.test(rawValue)) {
+        return [parseInt(rawValue, 10)];
+    }
+
+    // Αν είναι πολλαπλοί αριθμοί (π.χ. "155-120")
+    if (/^[\d\-\s,]+$/.test(rawValue)) {
+        return rawValue.split(/[\-\s,]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+    }
+
+    // Αν είναι Όνομα (π.χ. "ΧΡΥΣΑΓΗΣ")
+    // Ψάχνουμε στα ονόματα των φαρμακείων
+    const searchText = normalize(rawValue);
+    const found = allPharmacies.find(p => normalize(p.name).includes(searchText));
+    
+    if (found) {
+        return [found.id];
+    }
+    
+    return [];
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -242,8 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateDisplay = document.getElementById('current-date');
     const loadingMsg = document.getElementById('loading-msg');
     const mainLayout = document.getElementById('main-layout');
-    
-    // Ticker Elements
     const tickerContainer = document.getElementById('ticker-container');
     const tickerText = document.getElementById('ticker-text');
 
@@ -254,10 +293,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if(cityTitle) cityTitle.parentNode.insertBefore(fileLinkContainer, cityTitle.nextSibling);
     }
 
-    // Υπολογισμός και εμφάνιση της "Ενεργής" Ημερομηνίας
-    const effectiveDate = getShiftDate();
+    const shiftDate = getShiftDate(); 
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    dateDisplay.textContent = effectiveDate.toLocaleDateString('el-GR', options);
+    dateDisplay.textContent = shiftDate.obj.toLocaleDateString('el-GR', options);
 
     fetchGoogleSheet();
 
@@ -280,29 +318,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cols = parseCSVLine(row); 
                 if (cols.length < 2) return; 
 
-                // --- ΔΙΑΒΑΖΟΥΜΕ ΤΙΣ ΣΤΗΛΕΣ ---
-                const date = cols[0]; 
+                const parsedDate = parseDateStr(cols[0]);
                 const area = cols[1];
                 
-                // Night IDs (Col 2)
-                let nightIdsRaw = cols[2] ? cols[2].replace(/"/g, '') : ""; 
-                const nightIds = nightIdsRaw.split(/[-,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
-                
-                // Day IDs (Col 3)
-                let dayIdsRaw = cols[3] ? cols[3].replace(/"/g, '') : ""; 
-                const dayIds = dayIdsRaw.split(/[-,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+                // ΕΔΩ Η ΑΛΛΑΓΗ: Ψάχνει IDs *ή* Ονόματα
+                const nightIds = findPharmacyIds(cols[2], pharmacies);
+                const dayIds = findPharmacyIds(cols[3], pharmacies);
 
                 const link = cols[4] ? cols[4].replace(/"/g, '') : null;
                 const tickerMsg = cols[5] ? cols[5].replace(/"/g, '') : null;
 
-                globalSchedule.push({ date, area, nightIds, dayIds, link, adText: tickerMsg });
+                globalSchedule.push({ 
+                    dateObj: parsedDate,
+                    area, nightIds, dayIds, link, adText: tickerMsg 
+                });
             });
 
-            // Ticker Logic (Χρήση isEffectiveDate)
-            const todayAd = globalSchedule.find(s => isEffectiveDate(s.date, effectiveDate) && s.adText && s.adText.length > 2);
+            const todayAdEntry = globalSchedule.find(s => 
+                s.dateObj && 
+                s.dateObj.d === shiftDate.d &&
+                s.dateObj.m === shiftDate.m &&
+                s.dateObj.y === shiftDate.y &&
+                s.adText && s.adText.length > 2
+            );
             
-            if (todayAd && todayAd.adText && tickerText) {
-                tickerText.textContent = todayAd.adText;
+            if (todayAdEntry) {
+                tickerText.textContent = todayAdEntry.adText;
                 tickerContainer.style.display = 'block'; 
             } else {
                 tickerContainer.style.display = 'none'; 
@@ -310,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (loadingMsg) loadingMsg.style.display = 'none';
             if (mainLayout) mainLayout.style.display = 'grid';
-            initApp();
+            initApp(shiftDate);
 
         } catch (error) {
             console.error(error);
@@ -322,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function initApp() {
+    function initApp(currentShiftDate) {
         const mainAreas = ["Έδεσσα", "Γιαννιτσά", "Αριδαία", "Σκύδρα", "Κρύα Βρύση"];
         let currentArea = "Έδεσσα";
 
@@ -350,9 +391,11 @@ document.addEventListener('DOMContentLoaded', () => {
             fileLinkContainer.innerHTML = '';
             cityTitle.textContent = `Εφημερεύει: ${currentArea}`;
 
-            // Χρήση isEffectiveDate αντί για απλό date match
             const scheduleEntry = globalSchedule.find(s => 
-                isEffectiveDate(s.date, effectiveDate) && 
+                s.dateObj &&
+                s.dateObj.d === currentShiftDate.d &&
+                s.dateObj.m === currentShiftDate.m &&
+                s.dateObj.y === currentShiftDate.y &&
                 normalize(s.area) === normalize(currentArea)
             );
             
@@ -370,37 +413,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     </a>`;
             }
 
-            // Φίλτρο για ΟΛΑ τα φαρμακεία της περιοχής
             const areaPharmacies = pharmacies.filter(p => normalize(p.area) === normalize(currentArea));
             const centerName = cityCenters[currentArea];
 
-            // 1. ΚΕΝΤΡΟ - ΔΙΑΝΥΚΤΕΡΕΥΟΝΤΑ (Night)
+            // 1. ΚΕΝΤΡΟ - NIGHT
             const activeNightPharmacies = areaPharmacies.filter(p => nightIds.includes(p.id) && p.subArea === centerName);
-            
             if (activeNightPharmacies.length > 0) {
                 const header = document.createElement('div');
                 header.innerHTML = '<h4 style="margin:0 0 10px; color:#008542; border-bottom:2px solid #008542; padding-bottom:5px;">ΔΙΑΝΥΚΤΕΡΕΥΟΝΤΑ (24ωρο)</h4>';
                 cityContainer.appendChild(header);
-
-                activeNightPharmacies.forEach(p => {
-                    renderCard(p, cityContainer, 'night');
-                });
+                activeNightPharmacies.forEach(p => renderCard(p, cityContainer, 'night'));
             }
 
-            // 2. ΚΕΝΤΡΟ - ΔΙΗΜΕΡΕΥΟΝΤΑ (Day)
+            // 2. ΚΕΝΤΡΟ - DAY
             const activeDayPharmacies = areaPharmacies.filter(p => dayIds.includes(p.id) && p.subArea === centerName);
-
             if (activeDayPharmacies.length > 0) {
                 const header = document.createElement('div');
                 header.innerHTML = '<h4 style="margin:20px 0 10px; color:#e67e22; border-bottom:2px solid #e67e22; padding-bottom:5px;">ΔΙΗΜΕΡΕΥΟΝΤΑ (Έως 21:00/22:00)</h4>';
                 cityContainer.appendChild(header);
-
-                activeDayPharmacies.forEach(p => {
-                    renderCard(p, cityContainer, 'day');
-                });
+                activeDayPharmacies.forEach(p => renderCard(p, cityContainer, 'day'));
             }
 
-            // Αν δεν βρέθηκε κανένα
             if (activeNightPharmacies.length === 0 && activeDayPharmacies.length === 0) {
                 cityContainer.innerHTML = `
                     <div class="featured-card" style="background:#f9f9f9; border-top: 4px solid #ccc;">
@@ -415,8 +448,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (uniqueSubAreas.length > 0) {
                 uniqueSubAreas.forEach(sub => {
-                    // Στα χωριά συνήθως είναι ένα η βάρδια, οπότε κοιτάμε και τα δύο lists (Night & Day)
-                    // ή απλά το Night αν τα βάζεις όλα εκεί. Εδώ θα ψάξουμε και στα δύο.
                     const activePharmasInSub = areaPharmacies
                         .filter(p => (nightIds.includes(p.id) || dayIds.includes(p.id)) && p.subArea === sub)
                         .sort((a, b) => a.name.localeCompare(b.name));
@@ -441,12 +472,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     let detailsHTML = '';
                     if (hasPharmacy) {
                         detailsHTML = '<div class="location-details"><div class="details-content">';
-                        
                         activePharmasInSub.forEach((pharma, index) => {
                             const mapLink = pharma.map ? pharma.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pharma.name + " " + pharma.address + " " + pharma.area)}`;
-                            
                             if (index > 0) detailsHTML += '<hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">';
-
                             detailsHTML += `
                                 <div class="pharma-block">
                                     <p style="margin:0 0 5px; font-weight:bold; color:#2c3e50;">${pharma.name}</p>
@@ -457,11 +485,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </div>
                                 </div>`;
                         });
-
                         detailsHTML += '</div></div>';
                     }
                     row.innerHTML = headerHTML + detailsHTML;
-                    
                     if(hasPharmacy) {
                         row.querySelector('.location-header').addEventListener('click', () => {
                             const details = row.querySelector('.location-details');
@@ -486,11 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const mapLink = p.map ? p.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + " " + p.address + " " + p.area)}`;
             const card = document.createElement('div');
             card.className = 'featured-card';
-            
-            // Διαφορετικό χρώμα για Διημερεύοντα
-            if (type === 'day') {
-                card.style.borderTopColor = '#e67e22'; 
-            }
+            if (type === 'day') { card.style.borderTopColor = '#e67e22'; }
 
             card.innerHTML = `
                 <div style="font-size:0.9rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">
