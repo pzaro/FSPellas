@@ -244,4 +244,251 @@ document.addEventListener('DOMContentLoaded', () => {
         if(cityTitle) cityTitle.parentNode.insertBefore(fileLinkContainer, cityTitle.nextSibling);
     }
 
-    // 1. Υ
+    // 1. Υπολογισμός Ενεργής Ημερομηνίας
+    const shiftDate = getShiftDate(); // Επιστρέφει {d, m, y, obj}
+    
+    // Εμφάνιση Ημερομηνίας
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    dateDisplay.textContent = shiftDate.obj.toLocaleDateString('el-GR', options);
+
+    fetchGoogleSheet();
+
+    async function fetchGoogleSheet() {
+        try {
+            if (GOOGLE_SHEET_CSV_URL.includes('/edit')) {
+                throw new Error("Λάθος Link! Έχεις βάλει το link επεξεργασίας.");
+            }
+
+            const response = await fetch(GOOGLE_SHEET_CSV_URL);
+            if (!response.ok) throw new Error("Δεν ήταν δυνατή η σύνδεση με το Google Sheet.");
+            
+            const data = await response.text();
+            
+            const rows = data.split('\n').slice(1); 
+            
+            rows.forEach(row => {
+                if (!row.trim()) return;
+
+                const cols = parseCSVLine(row); 
+                if (cols.length < 2) return; 
+
+                // Ανάλυση Ημερομηνίας από το CSV σε καθαρούς αριθμούς
+                const parsedDate = parseDateStr(cols[0]);
+                const area = cols[1];
+                
+                let nightIdsRaw = cols[2] ? cols[2].replace(/"/g, '') : ""; 
+                const nightIds = nightIdsRaw.split(/[-,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+                
+                let dayIdsRaw = cols[3] ? cols[3].replace(/"/g, '') : ""; 
+                const dayIds = dayIdsRaw.split(/[-,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+
+                const link = cols[4] ? cols[4].replace(/"/g, '') : null;
+                const tickerMsg = cols[5] ? cols[5].replace(/"/g, '') : null;
+
+                globalSchedule.push({ 
+                    dateObj: parsedDate, // Αποθηκεύουμε το καθαρό αντικείμενο {d,m,y}
+                    area, nightIds, dayIds, link, adText: tickerMsg 
+                });
+            });
+
+            // Εύρεση Εγγραφής με βάση τους αριθμούς (ΟΧΙ Strings)
+            // Συγκρίνουμε το parsedDate του CSV με το shiftDate (σημερινή/χθεσινή μέρα)
+            const todayAdEntry = globalSchedule.find(s => 
+                s.dateObj && 
+                s.dateObj.d === shiftDate.d &&
+                s.dateObj.m === shiftDate.m &&
+                s.dateObj.y === shiftDate.y &&
+                s.adText && s.adText.length > 2
+            );
+            
+            if (todayAdEntry) {
+                tickerText.textContent = todayAdEntry.adText;
+                tickerContainer.style.display = 'block'; 
+            } else {
+                tickerContainer.style.display = 'none'; 
+            }
+
+            if (loadingMsg) loadingMsg.style.display = 'none';
+            if (mainLayout) mainLayout.style.display = 'grid';
+            initApp(shiftDate); // Περνάμε το shiftDate στο App
+
+        } catch (error) {
+            console.error(error);
+            if (loadingMsg) {
+                loadingMsg.innerHTML = `<div style="color:red; font-weight:bold; border:1px solid red; padding:10px; background:#fff0f0;">
+                    ⚠️ Πρόβλημα: ${error.message}
+                </div>`;
+            }
+        }
+    }
+
+    function initApp(currentShiftDate) {
+        const mainAreas = ["Έδεσσα", "Γιαννιτσά", "Αριδαία", "Σκύδρα", "Κρύα Βρύση"];
+        let currentArea = "Έδεσσα";
+
+        function renderTabs() {
+            if(!tabsContainer) return;
+            tabsContainer.innerHTML = '';
+            mainAreas.forEach(area => {
+                const btn = document.createElement('button');
+                btn.className = `tab-btn ${area === currentArea ? 'active' : ''}`;
+                btn.textContent = area;
+                btn.onclick = () => {
+                    currentArea = area;
+                    renderTabs();
+                    renderContent();
+                };
+                tabsContainer.appendChild(btn);
+            });
+        }
+
+        function renderContent() {
+            if(!cityContainer || !gridContainer) return;
+            
+            cityContainer.innerHTML = '';
+            gridContainer.innerHTML = '';
+            fileLinkContainer.innerHTML = '';
+            cityTitle.textContent = `Εφημερεύει: ${currentArea}`;
+
+            // Εύρεση προγράμματος με αριθμητική σύγκριση
+            const scheduleEntry = globalSchedule.find(s => 
+                s.dateObj &&
+                s.dateObj.d === currentShiftDate.d &&
+                s.dateObj.m === currentShiftDate.m &&
+                s.dateObj.y === currentShiftDate.y &&
+                normalize(s.area) === normalize(currentArea)
+            );
+            
+            const nightIds = scheduleEntry ? scheduleEntry.nightIds : [];
+            const dayIds = scheduleEntry ? scheduleEntry.dayIds : [];
+            const fileLink = scheduleEntry ? scheduleEntry.link : null;
+
+            if (fileLink && fileLink.length > 5) {
+                fileLinkContainer.innerHTML = `
+                    <a href="${fileLink}" target="_blank" style="
+                        display: block; background: #2c3e50; color: white; text-align: center; 
+                        padding: 12px; margin-bottom: 20px; border-radius: 8px; 
+                        text-decoration: none; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                        <i class="fas fa-file-download"></i> Προβολή Επίσημου Προγράμματος (PDF/Εικόνα)
+                    </a>`;
+            }
+
+            const areaPharmacies = pharmacies.filter(p => normalize(p.area) === normalize(currentArea));
+            const centerName = cityCenters[currentArea];
+
+            // 1. ΚΕΝΤΡΟ - NIGHT
+            const activeNightPharmacies = areaPharmacies.filter(p => nightIds.includes(p.id) && p.subArea === centerName);
+            if (activeNightPharmacies.length > 0) {
+                const header = document.createElement('div');
+                header.innerHTML = '<h4 style="margin:0 0 10px; color:#008542; border-bottom:2px solid #008542; padding-bottom:5px;">ΔΙΑΝΥΚΤΕΡΕΥΟΝΤΑ (24ωρο)</h4>';
+                cityContainer.appendChild(header);
+                activeNightPharmacies.forEach(p => renderCard(p, cityContainer, 'night'));
+            }
+
+            // 2. ΚΕΝΤΡΟ - DAY
+            const activeDayPharmacies = areaPharmacies.filter(p => dayIds.includes(p.id) && p.subArea === centerName);
+            if (activeDayPharmacies.length > 0) {
+                const header = document.createElement('div');
+                header.innerHTML = '<h4 style="margin:20px 0 10px; color:#e67e22; border-bottom:2px solid #e67e22; padding-bottom:5px;">ΔΙΗΜΕΡΕΥΟΝΤΑ (Έως 21:00/22:00)</h4>';
+                cityContainer.appendChild(header);
+                activeDayPharmacies.forEach(p => renderCard(p, cityContainer, 'day'));
+            }
+
+            if (activeNightPharmacies.length === 0 && activeDayPharmacies.length === 0) {
+                cityContainer.innerHTML = `
+                    <div class="featured-card" style="background:#f9f9f9; border-top: 4px solid #ccc;">
+                        <p style="color:#777; margin:0;">Δεν βρέθηκε εφημερία στο κέντρο για σήμερα.</p>
+                        ${!fileLink && !SHOW_ALL_MODE ? '<small style="color:#999;">(Ελέγξτε το αρχείο προγράμματος)</small>' : ''}
+                    </div>`;
+            }
+
+            // 3. ΧΩΡΙΑ
+            const uniqueSubAreas = [...new Set(areaPharmacies.map(p => p.subArea))]
+                .filter(sub => sub !== centerName).sort();
+
+            if (uniqueSubAreas.length > 0) {
+                uniqueSubAreas.forEach(sub => {
+                    const activePharmasInSub = areaPharmacies
+                        .filter(p => (nightIds.includes(p.id) || dayIds.includes(p.id)) && p.subArea === sub)
+                        .sort((a, b) => a.name.localeCompare(b.name));
+
+                    const hasPharmacy = activePharmasInSub.length > 0;
+                    const row = document.createElement('div');
+                    row.className = `location-row ${hasPharmacy ? 'has-pharmacy' : ''}`;
+
+                    const previewText = activePharmasInSub.map(p => p.name).join(', ');
+
+                    let headerHTML = `
+                        <div class="location-header">
+                            <div class="location-info">
+                                <span class="village-name">${sub}</span>
+                                ${hasPharmacy
+                                    ? `<span class="pharmacy-preview"><i class="fas fa-check-circle"></i> ${previewText}</span>` 
+                                    : `<span style="font-size:0.8rem; color:#bbb;">-</span>`}
+                            </div>
+                            ${hasPharmacy ? '<i class="fas fa-chevron-down" style="color:#aaa;"></i>' : ''}
+                        </div>`;
+
+                    let detailsHTML = '';
+                    if (hasPharmacy) {
+                        detailsHTML = '<div class="location-details"><div class="details-content">';
+                        activePharmasInSub.forEach((pharma, index) => {
+                            const mapLink = pharma.map ? pharma.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pharma.name + " " + pharma.address + " " + pharma.area)}`;
+                            if (index > 0) detailsHTML += '<hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">';
+                            detailsHTML += `
+                                <div class="pharma-block">
+                                    <p style="margin:0 0 5px; font-weight:bold; color:#2c3e50;">${pharma.name}</p>
+                                    <p style="margin:0 0 10px; color:#555; font-size:0.95rem;"><i class="fas fa-map-marker-alt"></i> ${pharma.address}</p>
+                                    <div style="display:flex; gap:10px;">
+                                        <a href="tel:${pharma.phone}" class="btn btn-call" style="background:var(--primary-color); color:white; padding:8px; border-radius:5px; text-decoration:none; flex:1; text-align:center; font-size:0.9rem;">Κλήση</a>
+                                        <a href="${mapLink}" target="_blank" class="btn btn-map" style="background:white; border:1px solid #ccc; color:#333; padding:8px; border-radius:5px; text-decoration:none; flex:1; text-align:center; font-size:0.9rem;">Χάρτης</a>
+                                    </div>
+                                </div>`;
+                        });
+                        detailsHTML += '</div></div>';
+                    }
+                    row.innerHTML = headerHTML + detailsHTML;
+                    if(hasPharmacy) {
+                        row.querySelector('.location-header').addEventListener('click', () => {
+                            const details = row.querySelector('.location-details');
+                            const icon = row.querySelector('.fa-chevron-down');
+                            if (details.style.maxHeight) {
+                                details.style.maxHeight = null;
+                                icon.style.transform = 'rotate(0deg)';
+                            } else {
+                                details.style.maxHeight = details.scrollHeight + "px";
+                                icon.style.transform = 'rotate(180deg)';
+                            }
+                        });
+                    }
+                    gridContainer.appendChild(row);
+                });
+            } else {
+                 gridContainer.innerHTML = '<p style="text-align:center; color:#999;">Δεν υπάρχουν χωριά.</p>';
+            }
+        }
+
+        function renderCard(p, container, type) {
+            const mapLink = p.map ? p.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + " " + p.address + " " + p.area)}`;
+            const card = document.createElement('div');
+            card.className = 'featured-card';
+            if (type === 'day') { card.style.borderTopColor = '#e67e22'; }
+
+            card.innerHTML = `
+                <div style="font-size:0.9rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">
+                    ${type === 'day' ? 'ANOIXTO EΩΣ 21:00/22:00' : 'ANOIXTO 24ΩΡΟ'}
+                </div>
+                <h3>${p.name}</h3>
+                <div class="address"><i class="fas fa-map-marker-alt"></i> ${p.address}</div>
+                <a href="tel:${p.phone}" class="big-phone" style="color:${type === 'day' ? '#e67e22' : '#008542'}">${p.phone}</a>
+                <div class="featured-actions">
+                    <a href="tel:${p.phone}" class="btn-large btn-call-large" style="background:${type === 'day' ? '#e67e22' : '#008542'}"><i class="fas fa-phone-alt"></i> Κλήση</a>
+                    <a href="${mapLink}" target="_blank" class="btn-large btn-map-large"><i class="fas fa-directions"></i> Χάρτης</a>
+                </div>`;
+            container.appendChild(card);
+        }
+
+        renderTabs();
+        renderContent();
+    }
+});
