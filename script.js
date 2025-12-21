@@ -2,6 +2,7 @@
 // 1. ΡΥΘΜΙΣΕΙΣ & ONLINE ΔΕΔΟΜΕΝΑ
 // ==========================================
 
+// Βεβαιώσου ότι αυτό το Link είναι το σωστό CSV από το Google Sheet σου
 const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTyh1AJApeD-UUcEwJvsEj7IgozJzjGzUXv8OY3wOPGD71_HbhsfuHUJcPb3uFC9-rnpCLE2j2YE7DK/pub?output=csv';
 
 const SHOW_ALL_MODE = false;
@@ -172,6 +173,7 @@ const pharmacies = [
     { id: 135, name: "ΤΖΑΙΚΟΥ ΧΡΙΣΤΙΝΑ", area: "Σκύδρα", subArea: "Άσπρο", address: "ΑΣΠΡΟ", phone: "2381061040", map: "" },
     { id: 138, name: "ΤΡΙΑΝΤΑΦΥΛΛΙΔΗΣ ΛΑΖΑΡΟΣ", area: "Σκύδρα", subArea: "Καλή", address: "ΚΑΛΗ", phone: "2381041464", map: "" },
     { id: 141, name: "ΤΣΕΛΕΠΗ ΜΑΡΙΑ", area: "Σκύδρα", subArea: "Λιπαρό", address: "ΛΙΠΑΡΟ", phone: "2381061851", map: "" },
+    { id: 147, name: "ΦΑΝΤΙΔΟΥ ΕΙΡΗΝΗ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΑΡΓΥΡΟΥΠΟΛΕΩΣ 23", phone: "2381089980", map: "" },
     { id: 150, name: "ΧΑΤΖΗΔΗΜΟΥ ΓΡΗΓΟΡΙΟΣ", area: "Σκύδρα", subArea: "Καλλίπολη", address: "ΚΑΛΛΙΠΟΛΗ", phone: "2381094000", map: "" },
 
     // --- ΚΡΥΑ ΒΡΥΣΗ ---
@@ -191,55 +193,71 @@ let globalSchedule = [];
 
 // --- ΒΟΗΘΗΤΙΚΕΣ ΣΥΝΑΡΤΗΣΕΙΣ ---
 
-// 1. Κανονικοποίηση Κειμένου (Αγνοεί τόνους/κενά)
 function normalize(str) {
     if (!str) return "";
     return str
         .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Αφαιρεί τόνους
-        .replace(/\s+/g, "") // Αφαιρεί όλα τα κενά
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+        .replace(/\s+/g, "")
         .trim();
 }
 
-// 2. Υπολογισμός Ενεργής Ημερομηνίας (Shift Date)
-function getShiftDate() {
-    const now = new Date();
+function parseDateStr(dateStr) {
+    if (!dateStr) return null;
+    const cleanStr = dateStr.trim().replace(/-/g, '/');
+    const parts = cleanStr.split('/');
+    
+    // Περίπτωση d/m/y (π.χ. 1/12/2025)
+    if (parts.length === 3) {
+        let d = parseInt(parts[0], 10);
+        let m = parseInt(parts[1], 10);
+        let y = parseInt(parts[2], 10);
+        
+        // ΔΙΟΡΘΩΣΗ: Έλεγχος αν το format είναι YYYY/MM/DD
+        if (d > 31) {
+            // Αν το πρώτο νούμερο είναι > 31, τότε είναι Έτος (YYYY/MM/DD)
+            y = parseInt(parts[0], 10);
+            m = parseInt(parts[1], 10);
+            d = parseInt(parts[2], 10);
+        } else {
+            // Αλλιώς είναι d/m/y
+            // Διόρθωση για 2ψηφιο έτος (π.χ. 25 -> 2025)
+            if (y < 100) y += 2000;
+        }
+        
+        return { d, m, y };
+    }
+    return null;
+}
+
+// ⚠️ ΝΕΑ ΣΥΝΑΡΤΗΣΗ: Λήψη Ώρας Δικτύου ⚠️
+async function getGreeceTime() {
+    try {
+        const response = await fetch("https://worldtimeapi.org/api/timezone/Europe/Athens");
+        if (!response.ok) throw new Error("Time API Error");
+        const data = await response.json();
+        return new Date(data.datetime);
+    } catch (error) {
+        console.warn("Δεν βρέθηκε ώρα δικτύου, χρήση ώρας συσκευής.", error);
+        return new Date(); // Fallback στην ώρα συσκευής αν αποτύχει
+    }
+}
+
+// Τροποποιημένη getShiftDate για να δέχεται το Date Object
+function getShiftDate(dateObj) {
+    const now = new Date(dateObj); // Δημιουργία αντιγράφου για να μην πειράξουμε το πρωτότυπο
     // Αν η ώρα είναι < 8, πάμε στην προηγούμενη μέρα
     if (now.getHours() < 8) {
         now.setDate(now.getDate() - 1);
     }
-    return now;
+    return {
+        d: now.getDate(),
+        m: now.getMonth() + 1,
+        y: now.getFullYear(),
+        obj: now 
+    };
 }
 
-// 3. Έλεγχος αν η ημερομηνία στο CSV ταιριάζει με την Ενεργή Ημερομηνία
-function isEffectiveDate(dateStr, effectiveDate) {
-    if (!dateStr) return false;
-    
-    const d = effectiveDate.getDate();
-    const m = effectiveDate.getMonth() + 1;
-    const y = effectiveDate.getFullYear();
-    const shortY = String(y).slice(-2);
-
-    // Καθαρίζουμε το dateStr από το Sheet
-    const cleanDate = dateStr.trim().replace(/-/g, '/'); // Αλλάζουμε παύλες σε κάθετες
-    
-    const validFormats = [
-        `${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`, // 2025/12/17
-        `${d}/${m}/${y}`,         // 17/12/2025
-        `${d}/${String(m).padStart(2, '0')}/${y}`, // 17/12/2025
-        `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`, // 17/12/2025
-        `${d}/${m}/${shortY}`,    // 17/12/25
-        `${d}/${m}`               // 17/12 (υποθέτει τρέχον έτος)
-    ];
-
-    // Ειδικός έλεγχος για YYYY-MM-DD (Excel default)
-    if (cleanDate === `${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`) return true;
-    
-    // Ελέγχουμε αν ταιριάζει σε κάποιο format
-    return validFormats.some(f => cleanDate === f || cleanDate === f.replace(/\//g, '-'));
-}
-
-// 4. ΑΣΦΑΛΗΣ ΑΝΑΓΝΩΣΗ CSV (Parse Line)
 function parseCSVLine(text) {
     let result = [];
     let cell = '';
@@ -247,21 +265,52 @@ function parseCSVLine(text) {
 
     for (let i = 0; i < text.length; i++) {
         let char = text[i];
-
-        if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
+        if (char === '"') { inQuotes = !inQuotes; }
+        else if (char === ',' && !inQuotes) {
             result.push(cell.trim());
             cell = '';
-        } else {
-            cell += char;
-        }
+        } else { cell += char; }
     }
     result.push(cell.trim());
     return result;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function findPharmacyIds(rawValue, allPharmacies, currentArea) {
+    if (!rawValue) return [];
+    
+    if (/^\d+$/.test(rawValue)) {
+        return [parseInt(rawValue, 10)];
+    }
+
+    if (/^[\d\-\s,]+$/.test(rawValue)) {
+        return rawValue.split(/[\-\s,]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+    }
+
+    const areaPharmacies = allPharmacies.filter(p => normalize(p.area) === normalize(currentArea));
+    const tokens = rawValue.split(/[\-,\/]+/);
+    let foundIds = [];
+
+    tokens.forEach(token => {
+        let searchStr = normalize(token);
+        if (!searchStr) return;
+
+        let match = areaPharmacies.find(p => normalize(p.name).includes(searchStr));
+
+        if (!match) {
+            const surname = searchStr.split(' ')[0]; 
+            if (surname.length > 2) { 
+                match = areaPharmacies.find(p => normalize(p.name).includes(surname));
+            }
+        }
+
+        if (match) foundIds.push(match.id);
+    });
+
+    return [...new Set(foundIds)]; 
+}
+
+// ⚠️ ΑΛΛΑΓΗ ΣΤΗ ΡΟΗ ΕΚΤΕΛΕΣΗΣ (ASYNC) ⚠️
+document.addEventListener('DOMContentLoaded', async () => {
     const tabsContainer = document.getElementById('tabs-container');
     const cityContainer = document.getElementById('city-pharmacy-container');
     const cityTitle = document.getElementById('city-title');
@@ -269,8 +318,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateDisplay = document.getElementById('current-date');
     const loadingMsg = document.getElementById('loading-msg');
     const mainLayout = document.getElementById('main-layout');
-    
-    // Ticker Elements
     const tickerContainer = document.getElementById('ticker-container');
     const tickerText = document.getElementById('ticker-text');
 
@@ -281,14 +328,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if(cityTitle) cityTitle.parentNode.insertBefore(fileLinkContainer, cityTitle.nextSibling);
     }
 
-    // Υπολογισμός και εμφάνιση της "Ενεργής" Ημερομηνίας
-    const effectiveDate = getShiftDate();
+    // 1. Λήψη πραγματικής ώρας Ελλάδας (Async)
+    if(loadingMsg) loadingMsg.style.display = 'block';
+    
+    const realTime = await getGreeceTime(); // Περιμένουμε να έρθει η ώρα
+    const shiftDate = getShiftDate(realTime); // Υπολογίζουμε τη βάρδια
+
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    dateDisplay.textContent = effectiveDate.toLocaleDateString('el-GR', options);
+    if(dateDisplay) dateDisplay.textContent = shiftDate.obj.toLocaleDateString('el-GR', options);
 
-    fetchGoogleSheet();
+    // 2. Τώρα καλούμε το Google Sheet με τη σωστή ημερομηνία
+    fetchGoogleSheet(shiftDate);
 
-    async function fetchGoogleSheet() {
+    async function fetchGoogleSheet(currentShiftDate) {
         try {
             if (GOOGLE_SHEET_CSV_URL.includes('/edit')) {
                 throw new Error("Λάθος Link! Έχεις βάλει το link επεξεργασίας.");
@@ -307,37 +359,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cols = parseCSVLine(row); 
                 if (cols.length < 2) return; 
 
-                // --- ΔΙΑΒΑΖΟΥΜΕ ΤΙΣ ΣΤΗΛΕΣ ---
-                const date = cols[0]; 
+                const parsedDate = parseDateStr(cols[0]);
                 const area = cols[1];
                 
-                // Night IDs (Col 2)
-                let nightIdsRaw = cols[2] ? cols[2].replace(/"/g, '') : ""; 
-                const nightIds = nightIdsRaw.split(/[-,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
-                
-                // Day IDs (Col 3)
-                let dayIdsRaw = cols[3] ? cols[3].replace(/"/g, '') : ""; 
-                const dayIds = dayIdsRaw.split(/[-,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+                const nightIds = findPharmacyIds(cols[2], pharmacies, area);
+                const dayIds = findPharmacyIds(cols[3], pharmacies, area);
 
                 const link = cols[4] ? cols[4].replace(/"/g, '') : null;
                 const tickerMsg = cols[5] ? cols[5].replace(/"/g, '') : null;
 
-                globalSchedule.push({ date, area, nightIds, dayIds, link, adText: tickerMsg });
+                globalSchedule.push({ 
+                    dateObj: parsedDate,
+                    area, nightIds, dayIds, link, adText: tickerMsg 
+                });
             });
 
-            // Ticker Logic (Χρήση isEffectiveDate)
-            const todayAd = globalSchedule.find(s => isEffectiveDate(s.date, effectiveDate) && s.adText && s.adText.length > 2);
+            // Ticker Logic
+            const todayAdEntry = globalSchedule.find(s => 
+                s.dateObj && 
+                s.dateObj.d === currentShiftDate.d &&
+                s.dateObj.m === currentShiftDate.m &&
+                s.dateObj.y === currentShiftDate.y &&
+                s.adText && s.adText.length > 2
+            );
             
-            if (todayAd && todayAd.adText && tickerText) {
-                tickerText.textContent = todayAd.adText;
+            if (todayAdEntry && tickerText) {
+                tickerText.textContent = todayAdEntry.adText;
                 tickerContainer.style.display = 'block'; 
-            } else {
+            } else if (tickerContainer) {
                 tickerContainer.style.display = 'none'; 
             }
 
             if (loadingMsg) loadingMsg.style.display = 'none';
             if (mainLayout) mainLayout.style.display = 'grid';
-            initApp();
+            initApp(currentShiftDate);
 
         } catch (error) {
             console.error(error);
@@ -349,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function initApp() {
+    function initApp(currentShiftDate) {
         const mainAreas = ["Έδεσσα", "Γιαννιτσά", "Αριδαία", "Σκύδρα", "Κρύα Βρύση"];
         let currentArea = "Έδεσσα";
 
@@ -377,9 +432,11 @@ document.addEventListener('DOMContentLoaded', () => {
             fileLinkContainer.innerHTML = '';
             cityTitle.textContent = `Εφημερεύει: ${currentArea}`;
 
-            // Χρήση isEffectiveDate αντί για απλό date match
             const scheduleEntry = globalSchedule.find(s => 
-                isEffectiveDate(s.date, effectiveDate) && 
+                s.dateObj &&
+                s.dateObj.d === currentShiftDate.d &&
+                s.dateObj.m === currentShiftDate.m &&
+                s.dateObj.y === currentShiftDate.y &&
                 normalize(s.area) === normalize(currentArea)
             );
             
@@ -397,37 +454,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     </a>`;
             }
 
-            // Φίλτρο για ΟΛΑ τα φαρμακεία της περιοχής
             const areaPharmacies = pharmacies.filter(p => normalize(p.area) === normalize(currentArea));
             const centerName = cityCenters[currentArea];
 
-            // 1. ΚΕΝΤΡΟ - ΔΙΑΝΥΚΤΕΡΕΥΟΝΤΑ (Night)
+            // 1. ΚΕΝΤΡΟ - NIGHT
             const activeNightPharmacies = areaPharmacies.filter(p => nightIds.includes(p.id) && p.subArea === centerName);
-            
             if (activeNightPharmacies.length > 0) {
                 const header = document.createElement('div');
                 header.innerHTML = '<h4 style="margin:0 0 10px; color:#008542; border-bottom:2px solid #008542; padding-bottom:5px;">ΔΙΑΝΥΚΤΕΡΕΥΟΝΤΑ (24ωρο)</h4>';
                 cityContainer.appendChild(header);
-
-                activeNightPharmacies.forEach(p => {
-                    renderCard(p, cityContainer, 'night');
-                });
+                activeNightPharmacies.forEach(p => renderCard(p, cityContainer, 'night'));
             }
 
-            // 2. ΚΕΝΤΡΟ - ΔΙΗΜΕΡΕΥΟΝΤΑ (Day)
+            // 2. ΚΕΝΤΡΟ - DAY
             const activeDayPharmacies = areaPharmacies.filter(p => dayIds.includes(p.id) && p.subArea === centerName);
-
             if (activeDayPharmacies.length > 0) {
                 const header = document.createElement('div');
                 header.innerHTML = '<h4 style="margin:20px 0 10px; color:#e67e22; border-bottom:2px solid #e67e22; padding-bottom:5px;">ΔΙΗΜΕΡΕΥΟΝΤΑ (Έως 21:00/22:00)</h4>';
                 cityContainer.appendChild(header);
-
-                activeDayPharmacies.forEach(p => {
-                    renderCard(p, cityContainer, 'day');
-                });
+                activeDayPharmacies.forEach(p => renderCard(p, cityContainer, 'day'));
             }
 
-            // Αν δεν βρέθηκε κανένα
             if (activeNightPharmacies.length === 0 && activeDayPharmacies.length === 0) {
                 cityContainer.innerHTML = `
                     <div class="featured-card" style="background:#f9f9f9; border-top: 4px solid #ccc;">
@@ -442,8 +489,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (uniqueSubAreas.length > 0) {
                 uniqueSubAreas.forEach(sub => {
-                    // Στα χωριά συνήθως είναι ένα η βάρδια, οπότε κοιτάμε και τα δύο lists (Night & Day)
-                    // ή απλά το Night αν τα βάζεις όλα εκεί. Εδώ θα ψάξουμε και στα δύο.
                     const activePharmasInSub = areaPharmacies
                         .filter(p => (nightIds.includes(p.id) || dayIds.includes(p.id)) && p.subArea === sub)
                         .sort((a, b) => a.name.localeCompare(b.name));
@@ -468,12 +513,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     let detailsHTML = '';
                     if (hasPharmacy) {
                         detailsHTML = '<div class="location-details"><div class="details-content">';
-                        
                         activePharmasInSub.forEach((pharma, index) => {
                             const mapLink = pharma.map ? pharma.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pharma.name + " " + pharma.address + " " + pharma.area)}`;
-                            
                             if (index > 0) detailsHTML += '<hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">';
-
                             detailsHTML += `
                                 <div class="pharma-block">
                                     <p style="margin:0 0 5px; font-weight:bold; color:#2c3e50;">${pharma.name}</p>
@@ -484,11 +526,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </div>
                                 </div>`;
                         });
-
                         detailsHTML += '</div></div>';
                     }
                     row.innerHTML = headerHTML + detailsHTML;
-                    
                     if(hasPharmacy) {
                         row.querySelector('.location-header').addEventListener('click', () => {
                             const details = row.querySelector('.location-details');
@@ -513,11 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const mapLink = p.map ? p.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + " " + p.address + " " + p.area)}`;
             const card = document.createElement('div');
             card.className = 'featured-card';
-            
-            // Διαφορετικό χρώμα για Διημερεύοντα
-            if (type === 'day') {
-                card.style.borderTopColor = '#e67e22'; 
-            }
+            if (type === 'day') { card.style.borderTopColor = '#e67e22'; }
 
             card.innerHTML = `
                 <div style="font-size:0.9rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">
