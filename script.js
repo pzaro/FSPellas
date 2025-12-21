@@ -2,7 +2,6 @@
 // 1. ΡΥΘΜΙΣΕΙΣ & ONLINE ΔΕΔΟΜΕΝΑ
 // ==========================================
 
-// Το διορθωμένο Link (CSV) για το δικό σου Google Sheet
 const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTyh1AJApeD-UUcEwJvsEj7IgozJzjGzUXv8OY3wOPGD71_HbhsfuHUJcPb3uFC9-rnpCLE2j2YE7DK/pub?output=csv';
 
 const SHOW_ALL_MODE = false;
@@ -320,7 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const mainLayout = document.getElementById('main-layout');
     const tickerContainer = document.getElementById('ticker-container');
     const tickerText = document.getElementById('ticker-text');
-    const bottomAdContainer = document.getElementById('bottom-ad-container'); // ΝΕΟ
+    const bottomAdContainer = document.getElementById('bottom-ad-container');
 
     let fileLinkContainer = document.getElementById('file-link-container');
     if (!fileLinkContainer) {
@@ -432,7 +431,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             cityContainer.innerHTML = '';
             gridContainer.innerHTML = '';
             fileLinkContainer.innerHTML = '';
-            bottomAdContainer.style.display = 'none'; // Reset
+            if(bottomAdContainer) bottomAdContainer.style.display = 'none'; // Reset
             cityTitle.textContent = `Εφημερεύει: ${currentArea}`;
 
             const scheduleEntry = globalSchedule.find(s => 
@@ -458,8 +457,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </a>`;
             }
 
-            // Εμφάνιση Κάτω Διαφήμισης
-            if (bottomAdText && bottomAdText.length > 2) {
+            // Εμφάνιση Κάτω Διαφήμισης (Από το Sheet)
+            if (bottomAdText && bottomAdText.length > 2 && bottomAdContainer) {
                 bottomAdContainer.innerHTML = bottomAdText;
                 bottomAdContainer.style.display = 'block';
             }
