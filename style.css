@@ -4,7 +4,7 @@
     --bg-color: #f4f7f6;
     --text-color: #333;
     --card-bg: #ffffff;
-    --ad-bg: #fff8e1; /* Χρώμα φόντου διαφήμισης */
+    --ad-bg: #fff8e1;
 }
 
 body {
@@ -39,7 +39,7 @@ h1 {
     font-weight: 500;
 }
 
-/* Tabs (Κουμπιά Πόλεων) */
+/* Tabs */
 .tabs {
     display: flex;
     overflow-x: auto;
@@ -70,7 +70,7 @@ h1 {
     box-shadow: 0 4px 6px rgba(0, 133, 66, 0.3);
 }
 
-/* Κάρτες Φαρμακείων (Κέντρο) */
+/* Cards */
 .cards-container {
     display: flex;
     flex-direction: column;
@@ -136,7 +136,7 @@ h1 {
     border: 1px solid #ddd;
 }
 
-/* Λίστα Χωριών (Accordion) */
+/* Χωριά */
 .village-list {
     margin-top: 20px;
 }
@@ -183,7 +183,7 @@ h1 {
     padding: 15px;
 }
 
-/* Ticker (Κυλιόμενο Μήνυμα) */
+/* Ticker */
 .ticker-wrap {
     width: 100%;
     background-color: #d32f2f;
@@ -217,7 +217,7 @@ h1 {
     margin-bottom: 15px;
 }
 
-/* ΝΕΟ: Στυλ για την κάτω διαφήμιση */
+/* Δυναμική Διαφήμιση (από Excel) */
 .bottom-ad {
     margin-top: 30px;
     padding: 20px;
@@ -225,13 +225,27 @@ h1 {
     border: 1px solid #ffecb3;
     border-radius: 8px;
     text-align: center;
-    font-weight: bold;
-    color: #5d4037;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .bottom-ad img {
     max-width: 100%;
     height: auto;
     border-radius: 4px;
+}
+
+/* Μόνιμη Διαφήμιση (Z-Boost) */
+.permanent-ad-container {
+    margin-top: 40px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    background: white;
+}
+
+.permanent-ad-container iframe {
+    width: 100%;
+    height: 600px; /* Ρύθμισε το ύψος όπως θες */
+    border: none;
+    display: block;
 }
