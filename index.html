@@ -3,42 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Εφημερεύοντα Φαρμακεία Πέλλας</title>
+    <title>Εφημερεύοντα Φαρμακεία</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <header>
-        <h1><i class="fas fa-clinic-medical"></i> ΕΦΗΜΕΡΙΕΣ ΚΑΙ ΔΙΗΜΕΡΕΥΣΕΙΣ ΦΑΡΜΑΚΕΙΩΝ Ν ΠΕΛΛΑΣ</h1>
-        <p id="current-date"></p>
-    </header>
-
-    <div class="ticker-wrap" id="ticker-container">
+    <div id="ticker-container" class="ticker-wrap" style="display: none;">
         <div class="ticker">
             <div class="ticker-item" id="ticker-text"></div>
         </div>
     </div>
 
-    <div class="container">
-        <div class="tabs-container" id="tabs-container"></div>
+    <div class="app-container">
+        <header>
+            <h1>Εφημερεύοντα Φαρμακεία</h1>
+            <div id="current-date" class="date-display">Φόρτωση ημερομηνίας...</div>
+        </header>
 
-        <div id="loading-msg" style="text-align:center; padding:20px; color:#666;">
-            <i class="fas fa-spinner fa-spin"></i> Φόρτωση...
-        </div>
-
-        <div class="content">
-            <div class="city-section">
-                <h2 id="city-title">Επιλέξτε Περιοχή</h2>
-                <div id="city-pharmacy-container"></div>
+        <div id="tabs-container" class="tabs">
             </div>
 
-            <div class="villages-section">
-                <h3>Περιφέρεια & Χωριά</h3>
-                <div id="pharmacy-grid" class="pharmacy-grid"></div>
+        <main id="main-layout" style="display: none;">
+            <div id="loading-msg" style="text-align: center; padding: 20px;">
+                <i class="fas fa-spinner fa-spin"></i> Φόρτωση προγράμματος...
             </div>
-        </div>
+
+            <h2 id="city-title" class="section-title"></h2>
+
+            <div id="city-pharmacy-container" class="cards-container"></div>
+
+            <hr class="divider">
+
+            <h3 class="section-subtitle">Περιφερειακά Ιατρεία / Χωριά</h3>
+            <div id="pharmacy-grid" class="village-list"></div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Ενημέρωση Φαρμακείων Ν. Πέλλας</p>
+        </footer>
     </div>
 
     <script src="script.js"></script>
