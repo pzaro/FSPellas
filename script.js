@@ -41,8 +41,7 @@ const pharmacies = [
     { id: 88, name: "ΜΟΡΗΣ ΟΥΜΠΕΡΤΟ", area: "Έδεσσα", subArea: "Μεσημέρι", address: "ΜΕΣΗΜΕΡΙ", phone: "2381021200" },
     { id: 89, name: "ΜΟΥΧΑΛΕΜΠΗΣ ΝΙΚΟΛΑΟΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "ΔΗΜΟΚΡΑΤΙΑΣ 25", phone: "2381023324" },
     { id: 90, name: "ΜΠΑΧΤΣΕΒΑΝΙΔΟΥ ΜΕΡΟΠΗ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "25ης ΜΑΡΤΙΟΥ 12", phone: "2381023080" },
-    { id: 94, name: "ΝΟΥΣΗΚΥΡΟΥ ΓΕΩΡΓΙΟΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "Υποσμηναγού Γιάκα 6 & Παύλου Μελά 3", phone: "2381025007" },
-    { id: 95, name: "ΝΟΥΣΗΚΥΡΟΥ ΙΩΑΝΝΗΣ ΙΑΣΩΝΑΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "18Ης ΟΚΤΩΒΡΙΟΥ 5", phone: "2381022553" },
+    { id: 95, name: "ΝΟΥΣΗΚΥΡΟΥ ΙΩΑΝΝΗΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "18Ης ΟΚΤΩΒΡΙΟΥ 5", phone: "2381022553" },
     { id: 107, name: "ΠΑΣΧΑΛΙΔΗΣ ΟΝΟΥΦΡΙΟΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "Π. ΜΕΛΑ 11", phone: "2381025007" },
     { id: 108, name: "ΠΑΣΧΑΛΟΓΛΟΥ ΧΡΙΣΤΙΝΑ", area: "Γιαννιτσά", subArea: "Δροσερό", address: "ΔΡΟΣΕΡΟ", phone: "2381096196" },
     { id: 110, name: "ΠΕΤΡΙΔΗΣ ΔΗΜΗΤΡΙΟΣ", area: "Έδεσσα", subArea: "Έδεσσα (Κέντρο)", address: "Γ. ΠΕΤΣΟΥ 2-4", phone: "2381026158" },
@@ -162,8 +161,8 @@ const pharmacies = [
     { id: 83, name: "ΜΗΝΤΙΛΑΚΗ ΔΕΣΠΟΙΝΑ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΕΘΝ. ΑΝΤΙΣΤΑΣΗΣ 8", phone: "2381088875", map: "" },
     { id: 91, name: "ΜΠΟΥΝΤΩΝΑΣ ΕΜΜΑΝΟΥΗΛ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "Μ.ΑΛΕΞΑΝΔΡΟΥ 30", phone: "2381089333", map: "" },
     { id: 92, name: "ΝΑΤΣΚΟΥ ΦΩΤΕΙΝΗ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "Μ. ΑΛΕΞΑΝΔΡΟΥ 33", phone: "2381089221", map: "" },
-    { id: 94, name: "ΝΟΥΣΗΚΥΡΟΥ ΣΟΦΙΑ", area: "Σκύδρα", subArea: "Σεβαστειανά", address: "ΣΕΒΑΣΤΕΙΑΝΑ", phone: "2381089565", map: "" },
-    { id: 96, name: "ΚΩΣΤΙΚΑ ΕΛΕΥΘΕΡΙΑ", area: "Σκύδρα", subArea: "Λουτροχώρι", address: "ΛΟΥΤΡΟΧΩΡΙ", phone: "2381052810", map: "" },
+    { id: 94, name: "ΝΟΥΣΗΚΥΡΟΥ ΓΕΩΡΓΙΟΣ", area: "Σκύδρα", subArea: "Σεβαστειανά", address: "ΣΕΒΑΣΤΕΙΑΝΑ", phone: "2381089565", map: "" },
+    { id: 96, name: "ΝΟΥΣΗΚΥΡΟΥ ΣΟΦΙΑ", area: "Σκύδρα", subArea: "Λουτροχώρι", address: "ΛΟΥΤΡΟΧΩΡΙ", phone: "2381052810", map: "" },
     { id: 99, name: "ΠΑΠΑΓΕΩΡΓΙΟΥ ΜΑΡΙΑ", area: "Σκύδρα", subArea: "Καλή", address: "ΚΑΛΗ", phone: "2381041884", map: "" },
     { id: 103, name: "ΠΑΠΑΪΩΑΝΝΟΥ ΜΑΡΙΑ", area: "Σκύδρα", subArea: "Πετριά", address: "ΠΕΤΡΙΑ", phone: "2381071056", map: "" },
     { id: 114, name: "ΣΑΒΒΙΔΗΣ ΠΑΝΑΓΙΩΤΗΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "Μ. ΑΛΕΞΑΝΔΡΟΥ 40", phone: "2381088173", map: "" },
@@ -191,46 +190,24 @@ const pharmacies = [
 
 let globalSchedule = []; 
 
-// --- ΒΟΗΘΗΤΙΚΕΣ ΣΥΝΑΡΤΗΣΕΙΣ ---
-
 function normalize(str) {
     if (!str) return "";
-    return str
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
-        .replace(/\s+/g, "")
-        .trim();
+    return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "").trim();
 }
 
 function parseDateStr(dateStr) {
     if (!dateStr) return null;
     const cleanStr = dateStr.trim().replace(/-/g, '/');
     const parts = cleanStr.split('/');
-    
-    // Περίπτωση d/m/y (π.χ. 1/12/2025)
     if (parts.length === 3) {
-        let d = parseInt(parts[0], 10);
-        let m = parseInt(parts[1], 10);
-        let y = parseInt(parts[2], 10);
-        
-        // ΔΙΟΡΘΩΣΗ: Έλεγχος αν το format είναι YYYY/MM/DD
-        if (d > 31) {
-            // Αν το πρώτο νούμερο είναι > 31, τότε είναι Έτος (YYYY/MM/DD)
-            y = parseInt(parts[0], 10);
-            m = parseInt(parts[1], 10);
-            d = parseInt(parts[2], 10);
-        } else {
-            // Αλλιώς είναι d/m/y
-            // Διόρθωση για 2ψηφιο έτος (π.χ. 25 -> 2025)
-            if (y < 100) y += 2000;
-        }
-        
+        let d = parseInt(parts[0], 10), m = parseInt(parts[1], 10), y = parseInt(parts[2], 10);
+        if (d > 31) { y = parseInt(parts[0], 10); m = parseInt(parts[1], 10); d = parseInt(parts[2], 10); } 
+        else { if (y < 100) y += 2000; }
         return { d, m, y };
     }
     return null;
 }
 
-// ⚠️ ΝΕΑ ΣΥΝΑΡΤΗΣΗ: Λήψη Ώρας Δικτύου ⚠️
 async function getGreeceTime() {
     try {
         const response = await fetch("https://worldtimeapi.org/api/timezone/Europe/Athens");
@@ -238,38 +215,23 @@ async function getGreeceTime() {
         const data = await response.json();
         return new Date(data.datetime);
     } catch (error) {
-        console.warn("Δεν βρέθηκε ώρα δικτύου, χρήση ώρας συσκευής.", error);
-        return new Date(); // Fallback στην ώρα συσκευής αν αποτύχει
+        return new Date();
     }
 }
 
-// Τροποποιημένη getShiftDate για να δέχεται το Date Object
 function getShiftDate(dateObj) {
-    const now = new Date(dateObj); // Δημιουργία αντιγράφου για να μην πειράξουμε το πρωτότυπο
-    // Αν η ώρα είναι < 8, πάμε στην προηγούμενη μέρα
-    if (now.getHours() < 8) {
-        now.setDate(now.getDate() - 1);
-    }
-    return {
-        d: now.getDate(),
-        m: now.getMonth() + 1,
-        y: now.getFullYear(),
-        obj: now 
-    };
+    const now = new Date(dateObj);
+    if (now.getHours() < 8) now.setDate(now.getDate() - 1);
+    return { d: now.getDate(), m: now.getMonth() + 1, y: now.getFullYear(), obj: now };
 }
 
 function parseCSVLine(text) {
-    let result = [];
-    let cell = '';
-    let inQuotes = false;
-
+    let result = [], cell = '', inQuotes = false;
     for (let i = 0; i < text.length; i++) {
         let char = text[i];
-        if (char === '"') { inQuotes = !inQuotes; }
-        else if (char === ',' && !inQuotes) {
-            result.push(cell.trim());
-            cell = '';
-        } else { cell += char; }
+        if (char === '"') inQuotes = !inQuotes;
+        else if (char === ',' && !inQuotes) { result.push(cell.trim()); cell = ''; } 
+        else cell += char;
     }
     result.push(cell.trim());
     return result;
@@ -277,39 +239,24 @@ function parseCSVLine(text) {
 
 function findPharmacyIds(rawValue, allPharmacies, currentArea) {
     if (!rawValue) return [];
-    
-    if (/^\d+$/.test(rawValue)) {
-        return [parseInt(rawValue, 10)];
-    }
-
-    if (/^[\d\-\s,]+$/.test(rawValue)) {
-        return rawValue.split(/[\-\s,]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
-    }
-
+    if (/^\d+$/.test(rawValue)) return [parseInt(rawValue, 10)];
+    if (/^[\d\-\s,]+$/.test(rawValue)) return rawValue.split(/[\-\s,]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
     const areaPharmacies = allPharmacies.filter(p => normalize(p.area) === normalize(currentArea));
     const tokens = rawValue.split(/[\-,\/]+/);
     let foundIds = [];
-
     tokens.forEach(token => {
         let searchStr = normalize(token);
         if (!searchStr) return;
-
         let match = areaPharmacies.find(p => normalize(p.name).includes(searchStr));
-
         if (!match) {
-            const surname = searchStr.split(' ')[0]; 
-            if (surname.length > 2) { 
-                match = areaPharmacies.find(p => normalize(p.name).includes(surname));
-            }
+            const surname = searchStr.split(' ')[0];
+            if (surname.length > 2) match = areaPharmacies.find(p => normalize(p.name).includes(surname));
         }
-
         if (match) foundIds.push(match.id);
     });
-
-    return [...new Set(foundIds)]; 
+    return [...new Set(foundIds)];
 }
 
-// ⚠️ ΑΛΛΑΓΗ ΣΤΗ ΡΟΗ ΕΚΤΕΛΕΣΗΣ (ASYNC) ⚠️
 document.addEventListener('DOMContentLoaded', async () => {
     const tabsContainer = document.getElementById('tabs-container');
     const cityContainer = document.getElementById('city-pharmacy-container');
@@ -322,6 +269,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tickerText = document.getElementById('ticker-text');
     const bottomAdContainer = document.getElementById('bottom-ad-container');
 
+    // ⚠️ Check if container exists in HTML
+    if (!bottomAdContainer) {
+        alert("ΠΡΟΣΟΧΗ: Λείπει το κουτί διαφήμισης (bottom-ad-container) από το HTML! Ενημέρωσε το index.html.");
+        return;
+    }
+
     let fileLinkContainer = document.getElementById('file-link-container');
     if (!fileLinkContainer) {
         fileLinkContainer = document.createElement('div');
@@ -329,68 +282,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         if(cityTitle) cityTitle.parentNode.insertBefore(fileLinkContainer, cityTitle.nextSibling);
     }
 
-    // 1. Λήψη πραγματικής ώρας Ελλάδας (Async)
-    if(loadingMsg) loadingMsg.style.display = 'block';
-    
-    const realTime = await getGreeceTime(); // Περιμένουμε να έρθει η ώρα
-    const shiftDate = getShiftDate(realTime); // Υπολογίζουμε τη βάρδια
-
+    const realTime = await getGreeceTime();
+    const shiftDate = getShiftDate(realTime);
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     if(dateDisplay) dateDisplay.textContent = shiftDate.obj.toLocaleDateString('el-GR', options);
 
-    // 2. Τώρα καλούμε το Google Sheet με τη σωστή ημερομηνία
     fetchGoogleSheet(shiftDate);
 
     async function fetchGoogleSheet(currentShiftDate) {
         try {
-            if (GOOGLE_SHEET_CSV_URL.includes('/edit')) {
-                throw new Error("Λάθος Link! Έχεις βάλει το link επεξεργασίας.");
-            }
-
             const response = await fetch(GOOGLE_SHEET_CSV_URL);
-            if (!response.ok) throw new Error("Δεν ήταν δυνατή η σύνδεση με το Google Sheet.");
-            
+            if (!response.ok) throw new Error("Connection Error");
             const data = await response.text();
-            
-            const rows = data.split('\n').slice(1); 
+            const rows = data.split('\n').slice(1);
             
             rows.forEach(row => {
                 if (!row.trim()) return;
-
-                const cols = parseCSVLine(row); 
-                if (cols.length < 2) return; 
+                const cols = parseCSVLine(row);
+                if (cols.length < 2) return;
 
                 const parsedDate = parseDateStr(cols[0]);
                 const area = cols[1];
-                
                 const nightIds = findPharmacyIds(cols[2], pharmacies, area);
                 const dayIds = findPharmacyIds(cols[3], pharmacies, area);
-
                 const link = cols[4] ? cols[4].replace(/"/g, '') : null;
                 const tickerMsg = cols[5] ? cols[5].replace(/"/g, '') : null;
-                const bottomAd = cols[6] ? cols[6].replace(/"/g, '') : null; // Στήλη G
+                
+                // ⚠️ SAFETY CHECK: Pad columns if G is missing
+                const bottomAd = cols.length > 6 ? cols[6].replace(/"/g, '') : null;
 
                 globalSchedule.push({ 
-                    dateObj: parsedDate,
-                    area, nightIds, dayIds, link, adText: tickerMsg, bottomAd: bottomAd 
+                    dateObj: parsedDate, area, nightIds, dayIds, link, adText: tickerMsg, bottomAd: bottomAd 
                 });
             });
 
             // Ticker Logic
-            const todayEntry = globalSchedule.find(s => 
-                s.dateObj && 
-                s.dateObj.d === currentShiftDate.d &&
-                s.dateObj.m === currentShiftDate.m &&
-                s.dateObj.y === currentShiftDate.y &&
-                s.adText && s.adText.length > 2
-            );
-            
+            const todayEntry = globalSchedule.find(s => s.dateObj && s.dateObj.d === currentShiftDate.d && s.dateObj.m === currentShiftDate.m && s.dateObj.y === currentShiftDate.y && s.adText && s.adText.length > 2);
             if (todayEntry && tickerText) {
                 tickerText.textContent = todayEntry.adText;
                 tickerContainer.style.display = 'block'; 
-            } else if (tickerContainer) {
-                tickerContainer.style.display = 'none'; 
-            }
+            } else if (tickerContainer) tickerContainer.style.display = 'none'; 
 
             if (loadingMsg) loadingMsg.style.display = 'none';
             if (mainLayout) mainLayout.style.display = 'grid';
@@ -398,11 +329,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error(error);
-            if (loadingMsg) {
-                loadingMsg.innerHTML = `<div style="color:red; font-weight:bold; border:1px solid red; padding:10px; background:#fff0f0;">
-                    ⚠️ Πρόβλημα: ${error.message}
-                </div>`;
-            }
         }
     }
 
@@ -417,31 +343,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const btn = document.createElement('button');
                 btn.className = `tab-btn ${area === currentArea ? 'active' : ''}`;
                 btn.textContent = area;
-                btn.onclick = () => {
-                    currentArea = area;
-                    renderTabs();
-                    renderContent();
-                };
+                btn.onclick = () => { currentArea = area; renderTabs(); renderContent(); };
                 tabsContainer.appendChild(btn);
             });
         }
 
         function renderContent() {
             if(!cityContainer || !gridContainer) return;
-            
-            cityContainer.innerHTML = '';
-            gridContainer.innerHTML = '';
-            fileLinkContainer.innerHTML = '';
-            if(bottomAdContainer) bottomAdContainer.style.display = 'none'; // Reset
+            cityContainer.innerHTML = ''; gridContainer.innerHTML = ''; fileLinkContainer.innerHTML = '';
+            if(bottomAdContainer) bottomAdContainer.style.display = 'none';
             cityTitle.textContent = `Εφημερεύει: ${currentArea}`;
 
-            const scheduleEntry = globalSchedule.find(s => 
-                s.dateObj &&
-                s.dateObj.d === currentShiftDate.d &&
-                s.dateObj.m === currentShiftDate.m &&
-                s.dateObj.y === currentShiftDate.y &&
-                normalize(s.area) === normalize(currentArea)
-            );
+            const scheduleEntry = globalSchedule.find(s => s.dateObj && s.dateObj.d === currentShiftDate.d && s.dateObj.m === currentShiftDate.m && s.dateObj.y === currentShiftDate.y && normalize(s.area) === normalize(currentArea));
             
             const nightIds = scheduleEntry ? scheduleEntry.nightIds : [];
             const dayIds = scheduleEntry ? scheduleEntry.dayIds : [];
@@ -449,25 +362,35 @@ document.addEventListener('DOMContentLoaded', async () => {
             const bottomAdText = scheduleEntry ? scheduleEntry.bottomAd : null;
 
             if (fileLink && fileLink.length > 5) {
-                fileLinkContainer.innerHTML = `
-                    <a href="${fileLink}" target="_blank" style="
-                        display: block; background: #2c3e50; color: white; text-align: center; 
-                        padding: 12px; margin-bottom: 20px; border-radius: 8px; 
-                        text-decoration: none; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
-                        <i class="fas fa-file-download"></i> Προβολή Επίσημου Προγράμματος (PDF/Εικόνα)
-                    </a>`;
+                fileLinkContainer.innerHTML = `<a href="${fileLink}" target="_blank" style="display: block; background: #2c3e50; color: white; text-align: center; padding: 12px; margin-bottom: 20px; border-radius: 8px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2);"><i class="fas fa-file-download"></i> Προβολή Επίσημου Προγράμματος (PDF/Εικόνα)</a>`;
             }
 
-            // Εμφάνιση Κάτω Διαφήμισης (Από το Sheet)
-            if (bottomAdText && bottomAdText.length > 2 && bottomAdContainer) {
-                bottomAdContainer.innerHTML = bottomAdText;
-                bottomAdContainer.style.display = 'block';
+            // ⚠️ ΛΟΓΙΚΗ ΔΙΑΦΗΜΙΣΗΣ (Μόνο αν υπάρχει Link) ⚠️
+            if (bottomAdText && bottomAdText.length > 5) { // Αυξημένο όριο για να αποφύγουμε "σκουπίδια"
+                let adContent = '';
+                if (bottomAdText.includes('<')) {
+                    // Είναι HTML (π.χ. εικόνα)
+                    adContent = bottomAdText;
+                } else {
+                    // Είναι Link -> Το κάνουμε iframe
+                    adContent = `<iframe src="${bottomAdText}" title="Ad" style="width:100%; height:500px; border:none; border-radius:8px;"></iframe>`;
+                }
+                
+                if (bottomAdContainer) {
+                    bottomAdContainer.innerHTML = adContent;
+                    bottomAdContainer.style.display = 'block';
+                }
+            } else {
+                // ΚΕΝΟ: Δεν κάνουμε τίποτα, το κουτί μένει κρυφό (display: none)
+                if (bottomAdContainer) {
+                    bottomAdContainer.style.display = 'none';
+                    bottomAdContainer.innerHTML = ''; // Καθαρισμός
+                }
             }
 
             const areaPharmacies = pharmacies.filter(p => normalize(p.area) === normalize(currentArea));
             const centerName = cityCenters[currentArea];
 
-            // 1. ΚΕΝΤΡΟ - NIGHT
             const activeNightPharmacies = areaPharmacies.filter(p => nightIds.includes(p.id) && p.subArea === centerName);
             if (activeNightPharmacies.length > 0) {
                 const header = document.createElement('div');
@@ -476,7 +399,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 activeNightPharmacies.forEach(p => renderCard(p, cityContainer, 'night'));
             }
 
-            // 2. ΚΕΝΤΡΟ - DAY
             const activeDayPharmacies = areaPharmacies.filter(p => dayIds.includes(p.id) && p.subArea === centerName);
             if (activeDayPharmacies.length > 0) {
                 const header = document.createElement('div');
@@ -486,55 +408,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             if (activeNightPharmacies.length === 0 && activeDayPharmacies.length === 0) {
-                cityContainer.innerHTML = `
-                    <div class="featured-card" style="background:#f9f9f9; border-top: 4px solid #ccc;">
-                        <p style="color:#777; margin:0;">Δεν βρέθηκε εφημερία στο κέντρο για σήμερα.</p>
-                        ${!fileLink && !SHOW_ALL_MODE ? '<small style="color:#999;">(Ελέγξτε το αρχείο προγράμματος)</small>' : ''}
-                    </div>`;
+                cityContainer.innerHTML = `<div class="featured-card" style="background:#f9f9f9; border-top: 4px solid #ccc;"><p style="color:#777; margin:0;">Δεν βρέθηκε εφημερία στο κέντρο για σήμερα.</p>${!fileLink && !SHOW_ALL_MODE ? '<small style="color:#999;">(Ελέγξτε το αρχείο προγράμματος)</small>' : ''}</div>`;
             }
 
-            // 3. ΧΩΡΙΑ
-            const uniqueSubAreas = [...new Set(areaPharmacies.map(p => p.subArea))]
-                .filter(sub => sub !== centerName).sort();
-
+            const uniqueSubAreas = [...new Set(areaPharmacies.map(p => p.subArea))].filter(sub => sub !== centerName).sort();
             if (uniqueSubAreas.length > 0) {
                 uniqueSubAreas.forEach(sub => {
-                    const activePharmasInSub = areaPharmacies
-                        .filter(p => (nightIds.includes(p.id) || dayIds.includes(p.id)) && p.subArea === sub)
-                        .sort((a, b) => a.name.localeCompare(b.name));
-
+                    const activePharmasInSub = areaPharmacies.filter(p => (nightIds.includes(p.id) || dayIds.includes(p.id)) && p.subArea === sub).sort((a, b) => a.name.localeCompare(b.name));
                     const hasPharmacy = activePharmasInSub.length > 0;
                     const row = document.createElement('div');
                     row.className = `location-row ${hasPharmacy ? 'has-pharmacy' : ''}`;
-
                     const previewText = activePharmasInSub.map(p => p.name).join(', ');
-
-                    let headerHTML = `
-                        <div class="location-header">
-                            <div class="location-info">
-                                <span class="village-name">${sub}</span>
-                                ${hasPharmacy
-                                    ? `<span class="pharmacy-preview"><i class="fas fa-check-circle"></i> ${previewText}</span>` 
-                                    : `<span style="font-size:0.8rem; color:#bbb;">-</span>`}
-                            </div>
-                            ${hasPharmacy ? '<i class="fas fa-chevron-down" style="color:#aaa;"></i>' : ''}
-                        </div>`;
-
+                    let headerHTML = `<div class="location-header"><div class="location-info"><span class="village-name">${sub}</span>${hasPharmacy ? `<span class="pharmacy-preview"><i class="fas fa-check-circle"></i> ${previewText}</span>` : `<span style="font-size:0.8rem; color:#bbb;">-</span>`}</div>${hasPharmacy ? '<i class="fas fa-chevron-down" style="color:#aaa;"></i>' : ''}</div>`;
                     let detailsHTML = '';
                     if (hasPharmacy) {
                         detailsHTML = '<div class="location-details"><div class="details-content">';
                         activePharmasInSub.forEach((pharma, index) => {
                             const mapLink = pharma.map ? pharma.map : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pharma.name + " " + pharma.address + " " + pharma.area)}`;
                             if (index > 0) detailsHTML += '<hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">';
-                            detailsHTML += `
-                                <div class="pharma-block">
-                                    <p style="margin:0 0 5px; font-weight:bold; color:#2c3e50;">${pharma.name}</p>
-                                    <p style="margin:0 0 10px; color:#555; font-size:0.95rem;"><i class="fas fa-map-marker-alt"></i> ${pharma.address}</p>
-                                    <div style="display:flex; gap:10px;">
-                                        <a href="tel:${pharma.phone}" class="btn btn-call" style="background:var(--primary-color); color:white; padding:8px; border-radius:5px; text-decoration:none; flex:1; text-align:center; font-size:0.9rem;">Κλήση</a>
-                                        <a href="${mapLink}" target="_blank" class="btn btn-map" style="background:white; border:1px solid #ccc; color:#333; padding:8px; border-radius:5px; text-decoration:none; flex:1; text-align:center; font-size:0.9rem;">Χάρτης</a>
-                                    </div>
-                                </div>`;
+                            detailsHTML += `<div class="pharma-block"><p style="margin:0 0 5px; font-weight:bold; color:#2c3e50;">${pharma.name}</p><p style="margin:0 0 10px; color:#555; font-size:0.95rem;"><i class="fas fa-map-marker-alt"></i> ${pharma.address}</p><div style="display:flex; gap:10px;"><a href="tel:${pharma.phone}" class="btn btn-call" style="background:var(--primary-color); color:white; padding:8px; border-radius:5px; text-decoration:none; flex:1; text-align:center; font-size:0.9rem;">Κλήση</a><a href="${mapLink}" target="_blank" class="btn btn-map" style="background:white; border:1px solid #ccc; color:#333; padding:8px; border-radius:5px; text-decoration:none; flex:1; text-align:center; font-size:0.9rem;">Χάρτης</a></div></div>`;
                         });
                         detailsHTML += '</div></div>';
                     }
@@ -543,20 +435,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                         row.querySelector('.location-header').addEventListener('click', () => {
                             const details = row.querySelector('.location-details');
                             const icon = row.querySelector('.fa-chevron-down');
-                            if (details.style.maxHeight) {
-                                details.style.maxHeight = null;
-                                icon.style.transform = 'rotate(0deg)';
-                            } else {
-                                details.style.maxHeight = details.scrollHeight + "px";
-                                icon.style.transform = 'rotate(180deg)';
-                            }
+                            if (details.style.maxHeight) { details.style.maxHeight = null; icon.style.transform = 'rotate(0deg)'; } else { details.style.maxHeight = details.scrollHeight + "px"; icon.style.transform = 'rotate(180deg)'; }
                         });
                     }
                     gridContainer.appendChild(row);
                 });
-            } else {
-                 gridContainer.innerHTML = '<p style="text-align:center; color:#999;">Δεν υπάρχουν χωριά.</p>';
-            }
+            } else { gridContainer.innerHTML = '<p style="text-align:center; color:#999;">Δεν υπάρχουν χωριά.</p>'; }
         }
 
         function renderCard(p, container, type) {
@@ -564,18 +448,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const card = document.createElement('div');
             card.className = 'featured-card';
             if (type === 'day') { card.style.borderTopColor = '#e67e22'; }
-
-            card.innerHTML = `
-                <div style="font-size:0.9rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">
-                    ${type === 'day' ? 'ANOIXTO EΩΣ 21:00/22:00' : 'ANOIXTO 24ΩΡΟ'}
-                </div>
-                <h3>${p.name}</h3>
-                <div class="address"><i class="fas fa-map-marker-alt"></i> ${p.address}</div>
-                <a href="tel:${p.phone}" class="big-phone" style="color:${type === 'day' ? '#e67e22' : '#008542'}">${p.phone}</a>
-                <div class="featured-actions">
-                    <a href="tel:${p.phone}" class="btn-large btn-call-large" style="background:${type === 'day' ? '#e67e22' : '#008542'}"><i class="fas fa-phone-alt"></i> Κλήση</a>
-                    <a href="${mapLink}" target="_blank" class="btn-large btn-map-large"><i class="fas fa-directions"></i> Χάρτης</a>
-                </div>`;
+            card.innerHTML = `<div style="font-size:0.9rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">${type === 'day' ? 'ANOIXTO EΩΣ 21:00/22:00' : 'ANOIXTO 24ΩΡΟ'}</div><h3>${p.name}</h3><div class="address"><i class="fas fa-map-marker-alt"></i> ${p.address}</div><a href="tel:${p.phone}" class="big-phone" style="color:${type === 'day' ? '#e67e22' : '#008542'}">${p.phone}</a><div class="featured-actions"><a href="tel:${p.phone}" class="btn-large btn-call-large" style="background:${type === 'day' ? '#e67e22' : '#008542'}"><i class="fas fa-phone-alt"></i> Κλήση</a><a href="${mapLink}" target="_blank" class="btn-large btn-map-large"><i class="fas fa-directions"></i> Χάρτης</a></div>`;
             container.appendChild(card);
         }
 
