@@ -165,7 +165,7 @@ const pharmacies = [
     { id: 96, name: "ΝΟΥΣΗΚΥΡΟΥ ΣΟΦΙΑ", area: "Σκύδρα", subArea: "Λουτροχώρι", address: "ΛΟΥΤΡΟΧΩΡΙ", phone: "2381052810", map: "" },
     { id: 99, name: "ΠΑΠΑΓΕΩΡΓΙΟΥ ΜΑΡΙΑ", area: "Σκύδρα", subArea: "Καλή", address: "ΚΑΛΗ", phone: "2381041884", map: "" },
     { id: 103, name: "ΠΑΠΑΪΩΑΝΝΟΥ ΜΑΡΙΑ", area: "Σκύδρα", subArea: "Πετριά", address: "ΠΕΤΡΙΑ", phone: "2381071056", map: "" },
-    { id: 114, name: "ΣΑΒΒΙΔΗΣ ΠΑΝΑΓΙΩΤΗΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "Μ. ΑΛΕΞΑΝΔΡΟΥ 40", phone: "2381088173", map: "" },
+    { id: 114, name: "ΣΑΒΒΙΔΗΣ ΠΑΝΑΓΙΩΤΗΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "Μ. ΑΛΕΞΑΝΔΡΟΥ 40", phone: "2381088875", map: "" },
     { id: 119, name: "ΣΔΡΑΥΚΑΚΗΣ ΒΑΣΙΛΕΙΟΣ", area: "Σκύδρα", subArea: "Δάφνη", address: "ΔΑΦΝΗ", phone: "2381061290", map: "" },
     { id: 124, name: "ΣΙΔΗΡΟΠΟΥΛΟΥ ΜΑΡΙΚΑ", area: "Σκύδρα", subArea: "Μαυροβούνι", address: "ΜΑΥΡΟΒΟΥΝΙ", phone: "2381088532", map: "" },
     { id: 126, name: "ΣΚΕΝΔΕΡΙΔΗΣ ΠΑΥΛΟΣ", area: "Σκύδρα", subArea: "Σκύδρα (Πόλη)", address: "ΕΘ.ΑΝΤΙΣΤΑΣΕΩΣ 24", phone: "2381088845", map: "" },
@@ -208,6 +208,7 @@ function parseDateStr(dateStr) {
     return null;
 }
 
+// Ώρα Ελλάδας
 async function getGreeceTime() {
     try {
         const response = await fetch("https://worldtimeapi.org/api/timezone/Europe/Athens");
@@ -215,13 +216,16 @@ async function getGreeceTime() {
         const data = await response.json();
         return new Date(data.datetime);
     } catch (error) {
-        return new Date();
+        return new Date(); // Fallback στην ώρα συσκευής
     }
 }
 
+// Η Λογική για το 00:00 - 08:00
 function getShiftDate(dateObj) {
     const now = new Date(dateObj);
-    if (now.getHours() < 8) now.setDate(now.getDate() - 1);
+    if (now.getHours() < 8) {
+        now.setDate(now.getDate() - 1); // Πάμε μια μέρα πίσω
+    }
     return { d: now.getDate(), m: now.getMonth() + 1, y: now.getFullYear(), obj: now };
 }
 
@@ -237,10 +241,15 @@ function parseCSVLine(text) {
     return result;
 }
 
+// Έξυπνη εύρεση ID (ακόμα και πολλά μαζί με κόμμα)
 function findPharmacyIds(rawValue, allPharmacies, currentArea) {
     if (!rawValue) return [];
-    if (/^\d+$/.test(rawValue)) return [parseInt(rawValue, 10)];
-    if (/^[\d\-\s,]+$/.test(rawValue)) return rawValue.split(/[\-\s,]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+    
+    // Αν είναι αριθμοί με κόμμα (π.χ. "26, 128")
+    if (/^[\d\-\s,]+$/.test(rawValue)) {
+        return rawValue.split(/[\-\s,]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+    }
+
     const areaPharmacies = allPharmacies.filter(p => normalize(p.area) === normalize(currentArea));
     const tokens = rawValue.split(/[\-,\/]+/);
     let foundIds = [];
@@ -269,12 +278,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tickerText = document.getElementById('ticker-text');
     const bottomAdContainer = document.getElementById('bottom-ad-container');
 
-    // ⚠️ Check if container exists in HTML
-    if (!bottomAdContainer) {
-        alert("ΠΡΟΣΟΧΗ: Λείπει το κουτί διαφήμισης (bottom-ad-container) από το HTML! Ενημέρωσε το index.html.");
-        return;
-    }
-
     let fileLinkContainer = document.getElementById('file-link-container');
     if (!fileLinkContainer) {
         fileLinkContainer = document.createElement('div');
@@ -282,8 +285,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if(cityTitle) cityTitle.parentNode.insertBefore(fileLinkContainer, cityTitle.nextSibling);
     }
 
+    // Παίρνουμε ώρα και υπολογίζουμε την "Εφημεριακή Ημέρα"
     const realTime = await getGreeceTime();
     const shiftDate = getShiftDate(realTime);
+    
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     if(dateDisplay) dateDisplay.textContent = shiftDate.obj.toLocaleDateString('el-GR', options);
 
@@ -291,8 +296,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function fetchGoogleSheet(currentShiftDate) {
         try {
-            const response = await fetch(GOOGLE_SHEET_CSV_URL);
+            // CACHE BUSTER: Προσθέτουμε &t=... για να μην κολλάει ο browser
+            const response = await fetch(GOOGLE_SHEET_CSV_URL + "&t=" + Date.now());
             if (!response.ok) throw new Error("Connection Error");
+            
             const data = await response.text();
             const rows = data.split('\n').slice(1);
             
@@ -303,12 +310,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 const parsedDate = parseDateStr(cols[0]);
                 const area = cols[1];
+                
+                // Διάβασμα στηλών
                 const nightIds = findPharmacyIds(cols[2], pharmacies, area);
                 const dayIds = findPharmacyIds(cols[3], pharmacies, area);
                 const link = cols[4] ? cols[4].replace(/"/g, '') : null;
                 const tickerMsg = cols[5] ? cols[5].replace(/"/g, '') : null;
                 
-                // ⚠️ SAFETY CHECK: Pad columns if G is missing
+                // Στήλη G (Διαφήμιση)
                 const bottomAd = cols.length > 6 ? cols[6].replace(/"/g, '') : null;
 
                 globalSchedule.push({ 
@@ -317,14 +326,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             // Ticker Logic
-            const todayEntry = globalSchedule.find(s => s.dateObj && s.dateObj.d === currentShiftDate.d && s.dateObj.m === currentShiftDate.m && s.dateObj.y === currentShiftDate.y && s.adText && s.adText.length > 2);
+            const todayEntry = globalSchedule.find(s => 
+                s.dateObj && 
+                s.dateObj.d === currentShiftDate.d &&
+                s.dateObj.m === currentShiftDate.m &&
+                s.dateObj.y === currentShiftDate.y &&
+                s.adText && s.adText.length > 2
+            );
+
             if (todayEntry && tickerText) {
                 tickerText.textContent = todayEntry.adText;
                 tickerContainer.style.display = 'block'; 
-            } else if (tickerContainer) tickerContainer.style.display = 'none'; 
+            } else if (tickerContainer) {
+                tickerContainer.style.display = 'none'; 
+            }
 
             if (loadingMsg) loadingMsg.style.display = 'none';
             if (mainLayout) mainLayout.style.display = 'grid';
+            
             initApp(currentShiftDate);
 
         } catch (error) {
@@ -350,29 +369,38 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         function renderContent() {
             if(!cityContainer || !gridContainer) return;
-            cityContainer.innerHTML = ''; gridContainer.innerHTML = ''; fileLinkContainer.innerHTML = '';
-            if(bottomAdContainer) bottomAdContainer.style.display = 'none';
+            
+            cityContainer.innerHTML = ''; 
+            gridContainer.innerHTML = ''; 
+            fileLinkContainer.innerHTML = '';
+            if(bottomAdContainer) bottomAdContainer.style.display = 'none'; // Reset
+
             cityTitle.textContent = `Εφημερεύει: ${currentArea}`;
 
-            const scheduleEntry = globalSchedule.find(s => s.dateObj && s.dateObj.d === currentShiftDate.d && s.dateObj.m === currentShiftDate.m && s.dateObj.y === currentShiftDate.y && normalize(s.area) === normalize(currentArea));
+            const scheduleEntry = globalSchedule.find(s => 
+                s.dateObj && 
+                s.dateObj.d === currentShiftDate.d && 
+                s.dateObj.m === currentShiftDate.m && 
+                s.dateObj.y === currentShiftDate.y && 
+                normalize(s.area) === normalize(currentArea)
+            );
             
             const nightIds = scheduleEntry ? scheduleEntry.nightIds : [];
             const dayIds = scheduleEntry ? scheduleEntry.dayIds : [];
             const fileLink = scheduleEntry ? scheduleEntry.link : null;
             const bottomAdText = scheduleEntry ? scheduleEntry.bottomAd : null;
 
+            // PDF Link
             if (fileLink && fileLink.length > 5) {
                 fileLinkContainer.innerHTML = `<a href="${fileLink}" target="_blank" style="display: block; background: #2c3e50; color: white; text-align: center; padding: 12px; margin-bottom: 20px; border-radius: 8px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2);"><i class="fas fa-file-download"></i> Προβολή Επίσημου Προγράμματος (PDF/Εικόνα)</a>`;
             }
 
-            // ⚠️ ΛΟΓΙΚΗ ΔΙΑΦΗΜΙΣΗΣ (Μόνο αν υπάρχει Link) ⚠️
-            if (bottomAdText && bottomAdText.length > 5) { // Αυξημένο όριο για να αποφύγουμε "σκουπίδια"
+            // ΔΙΑΦΗΜΙΣΗ: Μόνο αν υπάρχει Link
+            if (bottomAdText && bottomAdText.length > 5) {
                 let adContent = '';
                 if (bottomAdText.includes('<')) {
-                    // Είναι HTML (π.χ. εικόνα)
-                    adContent = bottomAdText;
+                    adContent = bottomAdText; // HTML embed
                 } else {
-                    // Είναι Link -> Το κάνουμε iframe
                     adContent = `<iframe src="${bottomAdText}" title="Ad" style="width:100%; height:500px; border:none; border-radius:8px;"></iframe>`;
                 }
                 
@@ -381,16 +409,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     bottomAdContainer.style.display = 'block';
                 }
             } else {
-                // ΚΕΝΟ: Δεν κάνουμε τίποτα, το κουτί μένει κρυφό (display: none)
-                if (bottomAdContainer) {
-                    bottomAdContainer.style.display = 'none';
-                    bottomAdContainer.innerHTML = ''; // Καθαρισμός
-                }
+                if (bottomAdContainer) bottomAdContainer.style.display = 'none';
             }
 
             const areaPharmacies = pharmacies.filter(p => normalize(p.area) === normalize(currentArea));
             const centerName = cityCenters[currentArea];
 
+            // NIGHT Cards
             const activeNightPharmacies = areaPharmacies.filter(p => nightIds.includes(p.id) && p.subArea === centerName);
             if (activeNightPharmacies.length > 0) {
                 const header = document.createElement('div');
@@ -399,6 +424,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 activeNightPharmacies.forEach(p => renderCard(p, cityContainer, 'night'));
             }
 
+            // DAY Cards
             const activeDayPharmacies = areaPharmacies.filter(p => dayIds.includes(p.id) && p.subArea === centerName);
             if (activeDayPharmacies.length > 0) {
                 const header = document.createElement('div');
@@ -407,10 +433,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 activeDayPharmacies.forEach(p => renderCard(p, cityContainer, 'day'));
             }
 
+            // Empty State
             if (activeNightPharmacies.length === 0 && activeDayPharmacies.length === 0) {
-                cityContainer.innerHTML = `<div class="featured-card" style="background:#f9f9f9; border-top: 4px solid #ccc;"><p style="color:#777; margin:0;">Δεν βρέθηκε εφημερία στο κέντρο για σήμερα.</p>${!fileLink && !SHOW_ALL_MODE ? '<small style="color:#999;">(Ελέγξτε το αρχείο προγράμματος)</small>' : ''}</div>`;
+                cityContainer.innerHTML = `<div class="featured-card" style="background:#f9f9f9; border-top: 4px solid #ccc;"><p style="color:#777; margin:0;">Δεν βρέθηκε εφημερία στο κέντρο για σήμερα.</p></div>`;
             }
 
+            // Villages
             const uniqueSubAreas = [...new Set(areaPharmacies.map(p => p.subArea))].filter(sub => sub !== centerName).sort();
             if (uniqueSubAreas.length > 0) {
                 uniqueSubAreas.forEach(sub => {
