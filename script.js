@@ -1,7 +1,6 @@
 // ==========================================
 // 1. ΡΥΘΜΙΣΕΙΣ & ONLINE ΔΕΔΟΜΕΝΑ
 // ==========================================
-
 const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTyh1AJApeD-UUcEwJvsEj7IgozJzjGzUXv8OY3wOPGD71_HbhsfuHUJcPb3uFC9-rnpCLE2j2YE7DK/pub?output=csv';
 
 const SHOW_ALL_MODE = false;
@@ -290,7 +289,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     const shiftDate = getShiftDate(realTime);
     
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    if(dateDisplay) dateDisplay.textContent = shiftDate.obj.toLocaleDateString('el-GR', options);
+    
+    // ====== ΝΕΟ: Υπολογισμός Επόμενης Μέρας για Λήξη Εφημερίας ======
+    const nextDay = new Date(shiftDate.obj);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const nextDayStr = nextDay.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+    if(dateDisplay) {
+        // Εμφανίζει την ημερομηνία και από κάτω μέχρι πότε ισχύει
+        dateDisplay.innerHTML = `
+            ${shiftDate.obj.toLocaleDateString('el-GR', options)} <br>
+            <span style="font-size: 0.85em; color: #c0392b; font-weight: bold; display: block; margin-top: 4px;">
+                (Ισχύει έως ${nextDayStr} 08:00 π.μ.)
+            </span>
+        `;
+    }
+    // =================================================================
 
     fetchGoogleSheet(shiftDate);
 
